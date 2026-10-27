@@ -7,6 +7,14 @@ rulebook. **This is my memory — read it, then work; update it as I learn.** Fi
 
 ---
 
+2026-10-27 bilingual finalization: captions use `./i18n.js` and shared
+`common/locales/{en,es}.json`; Spanish defaults, selector persists across pages.
+Artwork is now original procedural GPL / Apache-2.0 Chessnut (see root
+`LICENSES.md`), not Chess.com CDN. Windows browser verification uses
+`npm run test:browser` with installed Playwright Chromium. Run software 3D
+recording separately from PGN tests to avoid engine startup timeouts. Under
+reduced motion, do not attach paused CSS transitions to the dev scrubber.
+
 ## How the user works (follow exactly)
 - **Speedy, direct edits. No over-planning, no over-complicating.** He shows the running page, says
   what's wrong, I fix it fast. Edit → 1–2 line summary of what changed → he looks → feedback. Loop.

@@ -1,3 +1,4 @@
+import { translateLabel as L, translateMarkup } from './i18n.js';
 // Beat 3 — "The coach" · AUTOPLAY 3D CINEMATIC (own module). Plan: coach-plan.md.
 // One Three.js scene. The Claude logo acts out the overnight self-improvement loop:
 //   recede → book appears, Claude pulses + spawns a clone (subagent) → clone scans the
@@ -199,7 +200,7 @@ function lerpAngle(cur, target, k) {
 }
 loader.setMeshoptDecoder(MeshoptDecoder);
 const logoReady = MeshoptDecoder.ready
-  .then(() => loader.loadAsync(new URL('./models/claude-logo.glb', import.meta.url).href))
+  .then(() => loader.loadAsync(new URL('./models/assistant-mark.glb', import.meta.url).href))
   .then((gltf) => {
   const model = gltf.scene;
   model.traverse((o) => { if (o.isMesh) { o.material = clayMaterial(o.material, false); o.material.transparent = true; logoMats.push(o.material); } });
@@ -316,7 +317,7 @@ const CODE_TXT = [
 codePanel.innerHTML = `
   <div class="cc-bar"><i></i><i></i><i></i><span class="cc-file">concepts.ts</span><span class="cc-save">✓ Saved</span></div>
   <div class="cc-body">${CODE_TXT.map((l) => `<span class="cc-line${l.add ? ' cc-add' : ''}"></span>`).join('\n')}</div>`;
-overlay.appendChild(codePanel);
+overlay.appendChild(codePanel); translateMarkup(codePanel);
 const codeLines = codePanel.querySelectorAll('.cc-line');
 const TYPE_CPS = 42;   // typing speed (chars/sec) for the code finale
 
@@ -331,7 +332,7 @@ const cap = document.createElement('div');
 cap.className = 'coach-cap';
 overlay.appendChild(cap);
 function showCap(at, text) {
-  tl.add(() => { cap.textContent = text; cap.classList.add('show'); }, at);
+  tl.add(() => { cap.dataset.original = text; cap.textContent = L(text); cap.classList.add('show'); }, at);
 }
 function hideCap(at) { tl.add(() => cap.classList.remove('show'), at); }
 
@@ -363,7 +364,7 @@ function showCode(tl, at) {
     const st = { n: 0 };
     tl.to(st, {
       n: full.length, duration: Math.max(0.25, full.length / TYPE_CPS), ease: 'none',
-      onUpdate() { const n = Math.round(st.n); ln.textContent = full.slice(0, n) + (n < full.length ? '▌' : ''); },
+      onUpdate() { const n = Math.round(st.n); const localized=L(full), count=Math.round(n/full.length*localized.length); ln.textContent = localized.slice(0,count) + (count<localized.length?'▌':''); },
     }, i === 0 ? '>' : '>+0.12');
   });
 }
@@ -591,6 +592,10 @@ function run() {
   playGuideIn();      // titles stay through the empty beat + entrance; the timeline fades them at recede
   tl.restart();
 }
+window.addEventListener('stockthink:languagechange', () => {
+  if(cap.dataset.original) cap.textContent=L(cap.dataset.original);
+  if(visible && ready) run();
+});
 function maybeAutoplay() { if (played && ready) run(); }
 // Seamless replay while the viewer stays in the section: resume from act1 (skip the entrance fade-in/
 // scale-up). ACT 9 already left Claude centred at rest, so jumping to the act1 label loops cleanly.

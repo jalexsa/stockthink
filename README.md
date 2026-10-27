@@ -8,7 +8,8 @@ accuracy scores, and commentary that explains **why** each move is good or bad.
 No server. No account. No API keys. No cost. Powered by **Stockfish 18 (NNUE)**
 running as WebAssembly on your machine.
 
-**Live: https://malikahed.github.io/stockthink/**
+**Original project's live site: https://malikahed.github.io/stockthink/**
+This working bilingual version has not been published automatically.
 
 ## How it works (V2 analysis system)
 
@@ -51,19 +52,38 @@ back to the built-in explanation. The prompt design follows the CCC paper
 ```
 npm install
 npm run dev                              # vite dev server
-npm test                                 # 142 tests incl. real-engine integration
+npm test                                 # unit + real-engine integration tests
 npx vitest run self-improvement/test/gate.e2e.test.ts     # quality gate: full games, zero eval-speak
 npm run build                            # production build (Pages deploys on push)
+npx playwright install chromium           # once, for browser verification
+npm run test:browser                      # desktop + mobile, real PGN / Stockfish
 ```
 
 ## Languages
 
-The analysis app defaults to Spanish and includes an in-app language selector
-for English. The selection is saved in local storage and takes effect without a
-reload. UI strings live in `common/locales/en.json` and `common/locales/es.json`;
+The landing page and analysis app default to Spanish and share a visible language
+selector for English. The selection is saved in local storage when available and
+takes effect without a reload. UI and cinematic captions live in
+`common/locales/en.json` and `common/locales/es.json`;
 fact-based explanation phrasing is rendered in `backend/src/compose/templates.ts`.
 Chess facts, SAN, PGN, coordinates, Stockfish evaluation, and move classification
 remain language-neutral and unchanged.
+
+The display-only opening catalog in `common/locales/openings.*.json` covers common
+opening names and qualifiers. Unknown/custom source names are retained verbatim;
+the original opening book and PGN headers are never rewritten. Developer tools
+(the dev-only visual editor and recording studio) retain technical labels.
+
+Playwright starts Vite on `127.0.0.1:5173` if necessary. Tests use Chromium and
+Morphy's historic Opera Game, with optional online opening lookup disabled.
+Both languages render the same report; facts, SAN, classifications and evaluations
+are compared. See `self-improvement/docs/BILINGUAL-RELEASE.md` for release evidence.
+After `npm run build`, start `npm run preview -- --host 127.0.0.1 --port 4173`
+and run `node self-improvement/scripts/verify-production.mjs` for the production
+base-path smoke check. `STOCKTHINK_SOFTWARE_GL=1` opts browser tests into software
+rendering on hosts without usable GPU support; the default uses Chromium's native
+renderer. Asset hashes can be refreshed with
+`node self-improvement/scripts/asset-manifest.mjs` after rebuilding media.
 
 ## Original project and licensing
 
@@ -73,20 +93,15 @@ translation retains the repository's GPL-3.0-or-later license and copyright
 notices. The Spanish interface and i18n implementation are modifications to
 that project; see `CHANGELOG.md`.
 
-The code license does not grant rights to third-party assets. The opening data
-is identified by the project as CC0 (lichess), and Stockfish is GPL. The
-repository also contains Chess.com badge artwork and landing-page 3D models and
-textures; the checked-in project does not include license grants or complete
-source/provenance records for those assets. Chess.com terms describe a limited
-personal, noncommercial content license, so attribution alone does not prove
-that redistribution under this repository's GPL terms is permitted. Those
-asset rights remain to be confirmed with their respective owners before
-claiming that every bundled asset is freely redistributable. See
-`LICENSES.md` for the inventory and findings.
+Previously undocumented images, models and textures have been replaced by
+original GPL artwork and Apache-2.0 Chessnut pieces (Alexis Luengas). Sources,
+notices, rebuild commands and remaining GSAP / Stockfish source-packaging tasks
+are recorded in `LICENSES.md` and `ASSET-MANIFEST.json`. Resolve those publication
+questions before treating the whole bundle as cleared for redistribution.
 
 Stack: Vite 5 + TypeScript, chessops, chessground, Stockfish 18 Lite WASM
 (single-thread, 7.3 MB, committed in `frontend/public/engine/`). Project map in
 `CLAUDE.md`; docs index in `self-improvement/docs/README.md`.
 
-License: GPL-3.0 (Stockfish is GPL). Opening book CC0 (lichess). Badge images
-and Neo pieces © Chess.com, used for a free fan project.
+License: GPL-3.0-or-later. Opening book CC0 (lichess). Chessnut pieces
+© 2015 Alexis Luengas, Apache-2.0. See `SECURITY-REVIEW.md` for dependency findings.

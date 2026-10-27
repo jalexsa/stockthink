@@ -12,6 +12,7 @@ import type { MoveReport } from '../analysis/report';
 import type { Fact } from '../concepts/facts';
 import { renderFact } from './templates';
 import { getLocale } from '@common/i18n';
+import { openingDisplay } from '@common/opening-name';
 
 export interface VariationChip {
   label: string;
@@ -116,7 +117,7 @@ export function composeComment(m: MoveReport): Comment {
   const chips = buildChips(m);
 
   if (m.classification === 'book')
-    return { text: m.openingName ? (es ? `De libro: ${m.openingName}.` : `Book: ${m.openingName}.`) : (es ? 'Jugada conocida de teoría.' : 'A known book move.'), more: null, chips: [] };
+    return { text: m.openingName ? (es ? `De libro: ${openingDisplay(m.openingName)}.` : `Book: ${m.openingName}.`) : (es ? 'Jugada conocida de teoría.' : 'A known book move.'), more: null, chips: [] };
 
   const sentence = (f: Fact | undefined): string | null => (f ? renderFact(f) : null);
 

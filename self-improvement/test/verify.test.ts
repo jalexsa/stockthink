@@ -39,6 +39,15 @@ describe('verifyComment', () => {
   it('accepts castling notation', () => {
     expect(verifyComment('O-O tucks the king away.', WHITELIST).ok).toBe(true);
   });
+
+  it.each(['La evaluación mejora.','El motor prefiere Nf3.','Se pierden 20 centipeones.','La precisión baja.','La probabilidad de ganar cae.'])('rejects Spanish eval-speak: %s', comment => {
+    expect(verifyComment(comment,WHITELIST).ok).toBe(false);
+  });
+
+  it('applies the same square and SAN whitelist to Spanish commentary', () => {
+    expect(verifyComment('Nf3 desarrolla el caballo y controla d5.',WHITELIST).ok).toBe(true);
+    expect(verifyComment('Nf3 domina la casilla a6.',WHITELIST).ok).toBe(false);
+  });
 });
 
 describe('importCommentary', () => {

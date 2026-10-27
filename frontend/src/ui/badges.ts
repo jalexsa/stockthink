@@ -1,11 +1,11 @@
 /**
- * Classification visual vocabulary — official chess.com badge images
- * (self-hosted in frontend/public/badges/) + matched palette + glyph fallbacks.
+ * Classification visual vocabulary — original GPL badge artwork, generated
+ * by self-improvement/scripts/build-free-assets.mjs.
  */
 import type { Classification } from '@backend/analysis/classify';
 import { t } from '@common/i18n';
 
-/** URL of the official chess.com badge image for a classification. */
+/** URL of the original StockThink badge for a classification. */
 export const badgeUrl = (cls: Classification): string =>
   `${import.meta.env.BASE_URL}badges/${cls}.svg`;
 
@@ -23,10 +23,10 @@ export const CLASS_COLORS: Record<Classification, string> = {
   blunder: '#ca3431',
 };
 
-export const CLASS_LABELS: Record<Classification, string> = Object.fromEntries(
+export const CLASS_LABELS: Record<Classification, string> = Object.defineProperties({}, Object.fromEntries(
   (['brilliant','great','best','excellent','good','book','forced','inaccuracy','mistake','miss','blunder'] as Classification[])
-    .map(c => [c, t(c)]),
-) as Record<Classification, string>;
+    .map(c => [c, {get: () => t(c), enumerable: true}]),
+)) as Record<Classification, string>;
 
 /** Order classifications appear in the summary table. */
 export const CLASS_ORDER: Classification[] = [
@@ -45,7 +45,7 @@ export const CLASS_ORDER: Classification[] = [
 
 /**
  * SVG fragment for a classification badge at the top-right of a square —
- * the official chess.com badge image (chessground customSvg space:
+ * the original StockThink badge image (chessground customSvg space:
  * 100×100 viewBox per square).
  */
 export const badgeSvg = (cls: Classification): string =>

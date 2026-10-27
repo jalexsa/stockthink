@@ -10,3 +10,5 @@ frontend/landing/editor/edits.json
 .playwright-mcp/
 .vite/
 frontend/.vite/
+test-results/
+playwright-report/

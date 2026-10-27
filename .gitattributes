@@ -1,0 +1,7 @@
+# Keep downloaded Chessnut artwork byte-identical to the attributed source.
+frontend/public/pieces/chessnut/*.svg -text
+# Procedural SVG sources/generators use LF for reproducible asset hashes.
+frontend/public/badges/*.svg text eol=lf
+frontend/landing/icons/*.svg text eol=lf
+frontend/landing/icons/dock/*.svg text eol=lf
+frontend/landing/engine-mark.svg text eol=lf

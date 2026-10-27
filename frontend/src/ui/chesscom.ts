@@ -41,11 +41,23 @@ const TC_ICONS: Record<string, string> = {
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.5"/><path d="M12 2.5v2.6M12 18.9v2.6M2.5 12h2.6M18.9 12h2.6M5.3 5.3l1.8 1.8M16.9 16.9l1.8 1.8M18.7 5.3l-1.8 1.8M7.1 16.9l-1.8 1.8"/></svg>',
 };
 const tcIcon = (timeClass: string): string =>
-  `<span class="cc-tc cc-tc-${timeClass}" title="${esc(cap(timeClass))}">${TC_ICONS[timeClass] ?? TC_ICONS.rapid}</span>`;
+  `<span class="cc-tc cc-tc-${timeClass}" title="${esc(timeControlLabel(timeClass))}">${TC_ICONS[timeClass] ?? TC_ICONS.rapid}</span>`;
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+export const timeControlLabel = (s: string): string => s === 'rapid' ? t('time.rapid') : s === 'blitz' ? t('time.blitz') : s === 'bullet' ? t('time.bullet') : s === 'daily' ? t('time.daily') : cap(s);
+const errorLabel = (message: string): string => {
+  if(message==='Could not reach chess.com — check your connection.')return t('cc.network');
+  if(message==='chess.com is rate-limiting requests — wait a moment and retry.')return t('cc.rateLimit');
+  if(message==='No games in this month.')return t('cc.emptyMonth');
+  if(message==='engine init timeout')return t('engine.initTimeout');
+  if(message.startsWith('search timeout on '))return t('engine.searchTimeout');
+  const missing=message.match(/^No chess.com account named “(.*)”\.$/);
+  if(missing)return t('cc.notFound',{name:missing[1]});
+  const status=message.match(/^chess.com returned an error \((\d+)\)\.$/);
+  return status ? t('cc.error',{status:status[1]}) : message;
+};
 const archiveDisplay = (url: string): string => {
   const m = url.match(/(\d{4})\/(\d{2})$/);
   return m ? new Intl.DateTimeFormat(getLocale() === 'es' ? 'es-419' : 'en', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(+m[1], +m[2] - 1, 1))) : url;
@@ -164,7 +176,7 @@ function render(): void {
         ${busy === 'player' ? t('searching') : t('findGames')}
       </button>
     </form>
-    ${error ? `<p class="error">${esc(error)}</p>` : ''}
+    ${error ? `<p class="error">${esc(errorLabel(error))}</p>` : ''}
     ${player ? playerCardHtml() : busy !== 'player' && !error ? `<p class="hint cc-blurb">${t('ccBlurb')}</p>` : ''}
     ${player ? gamesHtml() : ''}`;
 
@@ -217,7 +229,7 @@ function playerCardHtml(): string {
   const rating = (key: keyof CcRatings): string =>
     ratings[key] === undefined
       ? ''
-      : `<span class="cc-rating" title="${cap(key)}">${tcIcon(key)}${ratings[key]}</span>`;
+      : `<span class="cc-rating" title="${timeControlLabel(key)}">${tcIcon(key)}${ratings[key]}</span>`;
   return `
     <div class="cc-player">
       <span class="cc-avatar">${p.avatar ? `<img src="${esc(p.avatar)}" alt="">` : letterAvatar()}</span>
@@ -253,7 +265,7 @@ function gamesHtml(): string {
   return `
     <div class="cc-toolbar">
       <select id="cc-month">${options}</select>
-      <span class="cc-count">${busy === 'games' ? '' : `${games.length} games${hidden ? ` · ${hidden} variant games hidden` : ''}`}</span>
+      <span class="cc-count">${busy === 'games' ? '' : `${t(games.length===1?'gameCount':'gamesCount',{count:games.length})}${hidden ? ` · ${t('hiddenVariants',{count:hidden})}` : ''}`}</span>
       <span class="cc-select-links">${t('select')} <button type="button" id="cc-sel-page">${t('shown')}</button> · <button type="button" id="cc-sel-none">${t('none')}</button></span>
     </div>
     ${list}
@@ -303,7 +315,7 @@ function updateStatuses(): void {
     } else if (state === 'queued') {
       chip = `<span class="chip queued">${t('queued')}</span>`;
     } else if (state === 'failed') {
-      chip = `<span class="chip failed" title="${esc(snap.failures.get(uuid) ?? '')}">${t('failed')}</span>`;
+      chip = `<span class="chip failed" title="${esc(errorLabel(snap.failures.get(uuid) ?? ''))}">${t('failed')}</span>`;
     }
     status.innerHTML = chip;
     const settled = isCached(uuid) || state === 'queued' || state === 'analyzing';

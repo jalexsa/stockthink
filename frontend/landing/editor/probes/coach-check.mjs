@@ -44,7 +44,7 @@ const loader = new GLTFLoader();
 await MeshoptDecoder.ready; loader.setMeshoptDecoder(MeshoptDecoder);
 const loadGLB = (p) => { const b = readFileSync(p); const ab = b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength); return new Promise((res, rej) => loader.parse(ab, '', res, rej)); };
 const bookGLB = await loadGLB('landing/models/book.glb');
-const logoGLB = await loadGLB('landing/models/claude-logo.glb');
+const logoGLB = await loadGLB('landing/models/assistant-mark.glb');
 
 // book rig: group(pos, scale=show) > model(fit, rot)
 function makeBook() {

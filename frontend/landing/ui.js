@@ -1,3 +1,4 @@
+import { t } from './i18n.js';
 // ===== NAV DARK / LIGHT THEME TOGGLE =====
 (function(){
   const btn = document.getElementById('navThemeToggle');
@@ -6,7 +7,7 @@
   if(!btn) return;
   function applyTheme(light){
     document.body.classList.toggle('light', light);
-    if(label) label.textContent = light ? 'Dark' : 'Light';
+    if(label) label.textContent = t(light ? 'landing.theme.dark' : 'landing.theme.light');
     if(icon) icon.textContent = light ? '\uD83C\uDF19' : '\u2600\uFE0F';
     if(window.setHeroTheme) window.setHeroTheme(light);
     try{ localStorage.setItem('st-theme', light ? 'light' : 'dark'); }catch(e){}

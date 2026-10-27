@@ -9,6 +9,7 @@ import type { EvalScore } from '@backend/analysis/winprob';
 import { badgeHtml, CLASS_COLORS } from './badges';
 import { renderRich } from './santag';
 import { t } from '@common/i18n';
+import { openingDisplay } from '@common/opening-name';
 
 /** "+1.3" / "−0.5" / "M5" — numbers belong to chips/bars, not prose. */
 export function formatEval(ev: EvalScore): string {
@@ -58,7 +59,7 @@ export function renderCoach(
   live = false,
 ): void {
   if (!move) {
-    const opening = report.opening ? `${esc(report.opening)}. ` : '';
+    const opening = report.opening ? `${esc(openingDisplay(report.opening))}. ` : '';
     el.innerHTML = `
       <div id="commentary-card">
         <div class="bubble">
@@ -93,7 +94,7 @@ export function renderCoach(
         ${live ? `<div class="live-row"><span class="live-tag">${t('yourMove')}</span><button id="live-back" title="${t('returnToGame')}">${t('backToReview')}</button></div>` : ''}
         <div class="verdict-row">
           ${badgeHtml(c)}
-          <span class="verdict-label"><span class="san">${renderRich(move.san, [move.fenBefore])}</span> is <span class="verdict-class" style="color:${CLASS_COLORS[c]}">${headline(c)}</span></span>
+          <span class="verdict-label"><span class="san">${renderRich(move.san, [move.fenBefore])}</span> ${t('moveIs')} <span class="verdict-class" style="color:${CLASS_COLORS[c]}">${headline(c)}</span></span>
           <span class="score-chip">${formatEval(move.evalAfter)}</span>
         </div>
         <div class="commentary-text">${renderRich(aiComment ?? comment.text, [move.fenBefore, move.fenAfter])}</div>

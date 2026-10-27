@@ -11,7 +11,7 @@ import { parseSan } from 'chessops/san';
 import { makeUci } from 'chessops/util';
 import type { Role } from 'chessops/types';
 
-const NEO = 'https://images.chesscomfiles.com/chess-themes/pieces/neo/150';
+const NEO = `${import.meta.env.BASE_URL}pieces/chessnut`;
 const ROLE_CODE: Record<Role, string> = {
   pawn: 'p',
   knight: 'n',
@@ -83,7 +83,7 @@ export function renderRich(text: string, fens: string[]): string {
     if (!p) return token;
     return (
       `<span class="san-tag ${p.color}" data-fen="${esc(p.fen)}" data-uci="${p.uci}">` +
-      `<img class="san-piece" src="${NEO}/${p.color.charAt(0)}${ROLE_CODE[p.role]}.png" alt="" draggable="false">` +
+      `<img class="san-piece" src="${NEO}/${p.color.charAt(0)}${ROLE_CODE[p.role]}.svg" alt="" draggable="false">` +
       `${tagText(token, p.role)}</span>`
     );
   });

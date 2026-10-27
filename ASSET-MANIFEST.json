@@ -1,0 +1,557 @@
+{
+  "auditDate": "2026-10-27",
+  "notes": "See LICENSES.md for attribution, notices and GSAP / release source-packaging questions.",
+  "files": [
+    {
+      "path": "frontend/landing/engine-mark.svg",
+      "bytes": 390,
+      "sha256": "194aea125bb87fdef274cd0137c6271a2b425e6b36d55fadb2398d9b88741541",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/best.svg",
+      "bytes": 464,
+      "sha256": "bad380dc3b257db3b1f391e543deb92f5e16210c4103415bc381626ba66bf01f",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/blunder.svg",
+      "bytes": 463,
+      "sha256": "a1ab0e268d876a34702e0198fa87381703de866d849b082b0585fc99818d352e",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/book.svg",
+      "bytes": 464,
+      "sha256": "f5577e740858b29082e6c1218c234a346df75d5d1d3001193a90799ae044646d",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/brilliant.svg",
+      "bytes": 463,
+      "sha256": "c2eac95cb5ef698332fcc3d863e02c5fe7d70485dad3707b52e2bf9a59053217",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/dock/browser.svg",
+      "bytes": 359,
+      "sha256": "770d63dacb4263c9c5cfd5b1081d2164ecde6f291a07a3d303a2ca11baba9506",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/dock/editor.svg",
+      "bytes": 313,
+      "sha256": "7e5ea43c8a6c3c134d4b70e4a3a07a5e0f25757d96caba1a5cd4f148c3f89c34",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/dock/folder.svg",
+      "bytes": 238,
+      "sha256": "b939c566899c61b2a61bddd26d7361311695abfcae6d18c259bbcc725c319dd0",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/dock/terminal.svg",
+      "bytes": 295,
+      "sha256": "19e63b2df110b9b88070cdbf1dbc648b32d112f823d3b242f51cd5ee28d8bf26",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/excellent.svg",
+      "bytes": 464,
+      "sha256": "f545155b6581888e804af033dc5a74f89cbaacf7179811ec9205e48e9b26ea99",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/good.svg",
+      "bytes": 462,
+      "sha256": "2109bb6fc914cc55d82ad923d5e445381e4c8168d0fe73412817b7d2714d9116",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/great.svg",
+      "bytes": 462,
+      "sha256": "f54148a027936009b1642a7a8e6c955c4f8ef440673df5f0d1d06455364e4ebf",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/inaccuracy.svg",
+      "bytes": 463,
+      "sha256": "6173b4ce83ddba0968b7aae38a0c3a9046aa133e2e771b8fa56985e065c514f3",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/learning.svg",
+      "bytes": 395,
+      "sha256": "2e289dabe9e963ff6ee91493024020698da00c0681b4ace40b62f1a8750cb828",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/miss.svg",
+      "bytes": 464,
+      "sha256": "06913f1b087390c299c62806e425b37bc20de469646e77d3f9142ef0845f2653",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/icons/mistake.svg",
+      "bytes": 462,
+      "sha256": "3d942cbfb24c67f69e3456828da86a99fc84d5f290b1b2df408c80a88eaceaf6",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/models/assistant-mark.glb",
+      "bytes": 143964,
+      "sha256": "1f4c769bd28ca06ba52095cf8bf3e540b00e2d9966c6018e065d719797961822",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/models/book.glb",
+      "bytes": 17400,
+      "sha256": "377c64dd9d69d45ca6f506a4236d38414c2735ab0b3a0737f414f60f877ef455",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/landing/models/gear.glb",
+      "bytes": 140784,
+      "sha256": "cece27a3b13289ce3331ff95964d834f1a10a0ecec55194936de85e066977aae",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/best.svg",
+      "bytes": 464,
+      "sha256": "bad380dc3b257db3b1f391e543deb92f5e16210c4103415bc381626ba66bf01f",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/blunder.svg",
+      "bytes": 463,
+      "sha256": "a1ab0e268d876a34702e0198fa87381703de866d849b082b0585fc99818d352e",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/book.svg",
+      "bytes": 464,
+      "sha256": "f5577e740858b29082e6c1218c234a346df75d5d1d3001193a90799ae044646d",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/brilliant.svg",
+      "bytes": 463,
+      "sha256": "c2eac95cb5ef698332fcc3d863e02c5fe7d70485dad3707b52e2bf9a59053217",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/checkmate.svg",
+      "bytes": 462,
+      "sha256": "9e5ba9ff36a16fc32030433156c152e0f70196b6f7f004f7a14344fe6224197c",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/excellent.svg",
+      "bytes": 464,
+      "sha256": "f545155b6581888e804af033dc5a74f89cbaacf7179811ec9205e48e9b26ea99",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/forced.svg",
+      "bytes": 464,
+      "sha256": "6378d0d7961be23b4c56d406a2d79df7bad1b8ed287d2a7295f58f4423205446",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/good.svg",
+      "bytes": 462,
+      "sha256": "2109bb6fc914cc55d82ad923d5e445381e4c8168d0fe73412817b7d2714d9116",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/great.svg",
+      "bytes": 462,
+      "sha256": "f54148a027936009b1642a7a8e6c955c4f8ef440673df5f0d1d06455364e4ebf",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/inaccuracy.svg",
+      "bytes": 463,
+      "sha256": "6173b4ce83ddba0968b7aae38a0c3a9046aa133e2e771b8fa56985e065c514f3",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/miss.svg",
+      "bytes": 464,
+      "sha256": "06913f1b087390c299c62806e425b37bc20de469646e77d3f9142ef0845f2653",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/badges/mistake.svg",
+      "bytes": 462,
+      "sha256": "3d942cbfb24c67f69e3456828da86a99fc84d5f290b1b2df408c80a88eaceaf6",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/engine/stockfish-18-lite-single.js",
+      "bytes": 20680,
+      "sha256": "2c02445abf3a13af1c5cb5a2be80ef0d62c3b3e1903823a10b7d6ddb87a94a15",
+      "license": "GPL-3.0",
+      "source": "https://github.com/nmrugg/stockfish.js/tree/31a9875",
+      "note": "Official v18.0.0 WASM matches exactly; loader matches after CRLF normalization. Original files unchanged; see engine/SOURCE.md."
+    },
+    {
+      "path": "frontend/public/engine/stockfish-18-lite-single.wasm",
+      "bytes": 7295411,
+      "sha256": "a8fbc05ec6920b56d7485826dcb02c5ffd2826bcbf751cf973046f237a9096f1",
+      "license": "GPL-3.0",
+      "source": "https://github.com/nmrugg/stockfish.js/tree/31a9875",
+      "note": "Official v18.0.0 WASM matches exactly; loader matches after CRLF normalization. Original files unchanged; see engine/SOURCE.md."
+    },
+    {
+      "path": "frontend/public/landing/models/bishop.glb",
+      "bytes": 101488,
+      "sha256": "ff6a869f4b8bbc6468a7bb1231801744b17e13c0d6323e85875e4319e7649e2a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/models/chess-board.glb",
+      "bytes": 10488,
+      "sha256": "3322d581827c9efa3b49ed4fe65b4f81ccc08c4a7be5a0753e7d9c6b20a1f318",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/models/king.glb",
+      "bytes": 61428,
+      "sha256": "2ff2cac95aa402324314f2eb39319006e262799b6862487e4f4d1686e20e9cca",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/models/knight.glb",
+      "bytes": 58012,
+      "sha256": "d1750e90737007e319f32c18b57f8fe978e59cfe9929d873904f26fe1cda7051",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/models/pawn.glb",
+      "bytes": 71028,
+      "sha256": "1f4b6ead05383699cf65ada15fe5c2cfd681effc933d3838218801e0334e9508",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/models/queen.glb",
+      "bytes": 329356,
+      "sha256": "6c1ce803ec0681bd9a6904ec626185dcb24ccd276d4aecaec4514fd507ab73b1",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/models/rook.glb",
+      "bytes": 66040,
+      "sha256": "c19d05e405e7828f81345c4bc82b53c07d7c31244fed45964bec6ecdd2a79465",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/bishop_base.png",
+      "bytes": 21526,
+      "sha256": "591ff7a1d0467718014adb9e152f694ac91ef537f71799faac7b7d5dfa06079a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/bishop_mr.png",
+      "bytes": 228,
+      "sha256": "9f2d3536c9f84d8e267b0347d031ef0faafd3f68d1aa881ebeb5e115978e8856",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/bishop_nrm.png",
+      "bytes": 206,
+      "sha256": "4684bf828e74430aeb04897a751f4295ecfc10352b28dbfb1c2d4f6c20ed3846",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/board_base.png",
+      "bytes": 16686,
+      "sha256": "2b12da86c2b5df59908688a1e561be63cf01a869a7af180603b8670b4d87e0d9",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/board_mr.png",
+      "bytes": 226,
+      "sha256": "7d2f6d372bd16006c2aacabeb4291623d95adab8f5bb6118c2aad25f45146db9",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/king_base.png",
+      "bytes": 21526,
+      "sha256": "591ff7a1d0467718014adb9e152f694ac91ef537f71799faac7b7d5dfa06079a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/king_mr.png",
+      "bytes": 228,
+      "sha256": "9f2d3536c9f84d8e267b0347d031ef0faafd3f68d1aa881ebeb5e115978e8856",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/king_nrm.png",
+      "bytes": 206,
+      "sha256": "4684bf828e74430aeb04897a751f4295ecfc10352b28dbfb1c2d4f6c20ed3846",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/knight_base.png",
+      "bytes": 21526,
+      "sha256": "591ff7a1d0467718014adb9e152f694ac91ef537f71799faac7b7d5dfa06079a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/knight_mr.png",
+      "bytes": 228,
+      "sha256": "9f2d3536c9f84d8e267b0347d031ef0faafd3f68d1aa881ebeb5e115978e8856",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/knight_nrm.png",
+      "bytes": 206,
+      "sha256": "4684bf828e74430aeb04897a751f4295ecfc10352b28dbfb1c2d4f6c20ed3846",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/pawn_base.png",
+      "bytes": 21526,
+      "sha256": "591ff7a1d0467718014adb9e152f694ac91ef537f71799faac7b7d5dfa06079a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/pawn_mr.png",
+      "bytes": 228,
+      "sha256": "9f2d3536c9f84d8e267b0347d031ef0faafd3f68d1aa881ebeb5e115978e8856",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/pawn_nrm.png",
+      "bytes": 206,
+      "sha256": "4684bf828e74430aeb04897a751f4295ecfc10352b28dbfb1c2d4f6c20ed3846",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/queen_base.png",
+      "bytes": 21526,
+      "sha256": "591ff7a1d0467718014adb9e152f694ac91ef537f71799faac7b7d5dfa06079a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/queen_mr.png",
+      "bytes": 228,
+      "sha256": "9f2d3536c9f84d8e267b0347d031ef0faafd3f68d1aa881ebeb5e115978e8856",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/queen_nrm.png",
+      "bytes": 206,
+      "sha256": "4684bf828e74430aeb04897a751f4295ecfc10352b28dbfb1c2d4f6c20ed3846",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/rook_base.png",
+      "bytes": 21526,
+      "sha256": "591ff7a1d0467718014adb9e152f694ac91ef537f71799faac7b7d5dfa06079a",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/rook_mr.png",
+      "bytes": 228,
+      "sha256": "9f2d3536c9f84d8e267b0347d031ef0faafd3f68d1aa881ebeb5e115978e8856",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/textures/rook_nrm.png",
+      "bytes": 206,
+      "sha256": "4684bf828e74430aeb04897a751f4295ecfc10352b28dbfb1c2d4f6c20ed3846",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/build-free-assets.mjs"
+    },
+    {
+      "path": "frontend/public/landing/video/ender-poster.jpg",
+      "bytes": 29786,
+      "sha256": "b9afc0b7875f4c74e8193d9476052342082d6d85ec439f5b0aae30934547556b",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/render-free-finale.mjs"
+    },
+    {
+      "path": "frontend/public/landing/video/ender.mp4",
+      "bytes": 7501833,
+      "sha256": "4d47bad37f5cfb8fae4ee2e1ac37a3cc91c1d0bd01219b33f77b24e90e0a2b78",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/render-free-finale.mjs"
+    },
+    {
+      "path": "frontend/public/landing/video/ender.webm",
+      "bytes": 6879888,
+      "sha256": "04460b52d5ac8b64b2c52fcf64e46e04d001600bb49543108b80a8e9c9ce1173",
+      "license": "GPL-3.0-or-later",
+      "source": "self-improvement/scripts/render-free-finale.mjs"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/bb.svg",
+      "bytes": 5273,
+      "sha256": "f835819861774dcacef7370ed2c23d4022ef6c2b17383a6a79c5f683d105e8b6",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/bk.svg",
+      "bytes": 4530,
+      "sha256": "220d75890b4368f0309bab0be40ac1dac6809508f5e1ecb119d35d225bf01f90",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/bn.svg",
+      "bytes": 1625,
+      "sha256": "acabd5a82666927d850a9eaab6f3766ef196a999dd3c6de0f927a8f12dacd356",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/bp.svg",
+      "bytes": 1484,
+      "sha256": "073fb7b38b2ebe66ee54854fa492da6cc04e6d92bc679c860b77c254fa1d46ce",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/bq.svg",
+      "bytes": 7411,
+      "sha256": "0308426c9cfafabdce64600cbe90c193fc6ef7665f072b43d4dc82b5c1047670",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/br.svg",
+      "bytes": 3077,
+      "sha256": "ad18856a97edf53281acc40e1e6e4f7021ed01fad380fff7e09e63465b3bb462",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/wb.svg",
+      "bytes": 5492,
+      "sha256": "14cd4828240708d4d8431034537e2a5fb662d5054246fef681b172680cae9fcd",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/wk.svg",
+      "bytes": 6258,
+      "sha256": "e50809e91a15790c8d81d3f199bf569f0eb5a09c472a0415944e8c9e3cfcddd0",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/wn.svg",
+      "bytes": 1649,
+      "sha256": "adc921896bb6e6547828f2a6eb3d5195dd1b7ac8e8c1d2a9085583e4d4d81b68",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/wp.svg",
+      "bytes": 1417,
+      "sha256": "0cf9dfe2f7b3ab11a7fdb13bf350f32e7a6c94e193fc023933e129ec02eeed8d",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/wq.svg",
+      "bytes": 3600,
+      "sha256": "2395664337bea8f13093858320cce6075d80f8086e6aa47e122ce556262b4d6b",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    },
+    {
+      "path": "frontend/public/pieces/chessnut/wr.svg",
+      "bytes": 3350,
+      "sha256": "e7fb8605a9318ef50e497a97680e4722d3eabc1e9ab6e4e9f594b8f2ca2022e5",
+      "license": "Apache-2.0",
+      "source": "https://github.com/LexLuengas/chessnut-pieces/tree/2b8eaf14a31edad7e9deb53b1473e1d4857868a9",
+      "copyright": "Copyright 2015 Alexis Luengas",
+      "changes": "Filename case only; image bytes unchanged"
+    }
+  ]
+}

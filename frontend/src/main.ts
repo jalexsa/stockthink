@@ -21,7 +21,7 @@ import { analysisQueue, type QueueJob } from '@backend/chesscom/queue';
 import { getReport } from '@backend/chesscom/store';
 import type { VariationChip } from '@backend/compose/compose';
 import { disposeLive, liveMoveReport, seedLiveAnalysis } from '@backend/live';
-import { initChesscomTab, refreshCached, refreshChesscomLanguage } from './ui/chesscom';
+import { initChesscomTab, refreshCached, refreshChesscomLanguage, timeControlLabel } from './ui/chesscom';
 import { startLoader, stopLoader } from './ui/loader';
 import { badgeSvg } from './ui/badges';
 import { formatEval, renderCoach, renderCoachThinking } from './ui/coach';
@@ -31,7 +31,7 @@ import { attachPreviews } from './ui/santag';
 import { renderGraph } from './ui/graph';
 import { renderMoveList } from './ui/movelist';
 import { renderSummary } from './ui/summary';
-import { applyStaticTranslations, getLocale, initLocale, setLocale, t } from '@common/i18n';
+import { applyStaticTranslations, getLocale, initLocale, setLocale, t, type Locale } from '@common/i18n';
 
 initLocale();
 
@@ -57,7 +57,7 @@ let spotlight: {
 /** Hover preview of a move tag — remembers how to restore the view. */
 let previewTimer: ReturnType<typeof setTimeout> | null = null;
 let previewing = false;
-let aiComments: Map<number, string> = new Map();
+const aiComments = new Map<Locale, Map<number, string>>();
 /** Live "try a move" line played by the user from the current ply. */
 let exploreLine: AnnotatedMove[] = [];
 let exploreThinking = false;
@@ -122,6 +122,8 @@ function displayAnalysisError(e: unknown): string {
   const message = e instanceof Error ? e.message : String(e);
   if (message === 'No game found in PGN') return t('noGameInPgn');
   if (message === 'PGN contains no moves') return t('pgnNoMoves');
+  if (message === 'engine init timeout') return t('engine.initTimeout');
+  if (message.startsWith('search timeout on ')) return t('engine.searchTimeout');
   const badStart = message.match(/^Bad starting position in PGN: (.*)$/);
   if (badStart) return t('badPgnStart', { detail: badStart[1] });
   const illegal = message.match(/^Illegal or unreadable move (\d+): "(.*)"$/);
@@ -200,7 +202,7 @@ async function reviewCcGame(game: CcGame): Promise<void> {
   const cached = await getReport(game.uuid, tier);
   if (cached) return openReport(cached);
   const label = `${game.white.username} vs ${game.black.username}`;
-  const tc = game.timeClass ? ` · ${game.timeClass.charAt(0).toUpperCase()}${game.timeClass.slice(1)}` : '';
+  const tc = game.timeClass ? ` · ${timeControlLabel(game.timeClass)}` : '';
   try {
     const r = await runForeground(
       { id: game.uuid, pgn: game.pgn, tier, label, cacheUuid: game.uuid },
@@ -216,18 +218,31 @@ async function reviewCcGame(game: CcGame): Promise<void> {
 }
 
 /* ------------------------------------------------------------ review --- */
+function renderDeepReviewPanel(r: AnnotatedReport, preserveDraft = false): void {
+  const host=$('#deep-review');
+  const language=getLocale();
+  const draft=preserveDraft ? host.querySelector<HTMLTextAreaElement>('#dr-paste')?.value ?? '' : '';
+  const open=preserveDraft ? host.querySelector('details')?.open ?? false : false;
+  renderDeepReview(host,r,imported=>{
+    if(report!==r)return;
+    aiComments.set(language,imported);
+    if(language===getLocale())render();
+  });
+  const input=host.querySelector<HTMLTextAreaElement>('#dr-paste');
+  if(input)input.value=draft;
+  const details=host.querySelector('details');
+  if(details)details.open=open;
+}
+
 function initReview(): void {
   const r = report!;
   show('review');
   ply = 0;
   orientation = 'white';
-  aiComments = new Map();
+  aiComments.clear();
   exploreLine = [];
   exploreThinking = false;
-  renderDeepReview($('#deep-review'), r, imported => {
-    aiComments = imported;
-    render();
-  });
+  renderDeepReviewPanel(r);
   board = Chessground($('#board'), {
     fen: r.initialFen,
     coordinates: true,
@@ -333,8 +348,8 @@ function enterSpotlight(chip: VariationChip): void {
     i: 0,
     title:
       chip.kind === 'best'
-        ? `The best move was ${chip.sanPv[0] ?? ''}`
-        : `Why ${m?.san ?? 'that move'} falls short`,
+        ? t('spotBestTitle',{san:chip.sanPv[0] ?? ''})
+        : t('spotRefutationTitle',{san:m?.san ?? t('thatMove')}),
     kind: chip.kind,
     chip,
     tryLine: [],
@@ -559,7 +574,7 @@ function render(): void {
     r,
     m,
     enterSpotlight,
-    m && !live ? (aiComments.get(m.ply) ?? null) : null,
+    m && !live ? (aiComments.get(getLocale())?.get(m.ply) ?? null) : null,
     live,
   );
   $('#coach')
@@ -689,8 +704,14 @@ languageSelect.addEventListener('change', () => {
   document.querySelector('meta[name="description"]')?.setAttribute('content', t('heroDescription'));
   applyStaticTranslations();
   if (report && !screens.review().classList.contains('hidden')) {
-    renderDeepReview($('#deep-review'), report, imported => { aiComments = imported; render(); });
-    render();
+    renderDeepReviewPanel(report,true);
+    if (spotlight) {
+      const m=exploreLine.length ? exploreLine[exploreLine.length-1] : ply>0 ? report.moves[ply-1] : null;
+      const fine=m ? !['inaccuracy','mistake','blunder','miss'].includes(m.classification) : false;
+      spotlight.steps=buildWalkthrough(spotlight.chip,m?.san ?? null,fine);
+      spotlight.title=spotlight.kind==='best' ? t('spotBestTitle',{san:spotlight.chip.sanPv[0] ?? ''}) : t('spotRefutationTitle',{san:m?.san ?? t('thatMove')});
+      renderSpotlight();
+    } else render();
   } else if (!screens.home().classList.contains('hidden')) renderHome();
   refreshChesscomLanguage();
 });
@@ -699,7 +720,7 @@ show('home'); // boot: land on the home screen (starts its knight)
 
 document.addEventListener('keydown', e => {
   if (!report || screens.review().classList.contains('hidden')) return;
-  if (e.target instanceof HTMLTextAreaElement) return;
+  if (e.target instanceof HTMLElement && e.target.closest('input,textarea,select,[contenteditable="true"]')) return;
   if (spotlight) {
     // try mode first: ← undoes, Esc returns to the line
     if (spotlight.tryLine.length || spotlight.thinking) {

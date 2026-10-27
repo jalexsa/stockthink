@@ -3,6 +3,7 @@
 // scene's intro animation, then boots the modules in dependency order:
 //   pieces (asset manifest) -> scene (three.js) -> sections (scroll demos) -> ui.
 import gsap from 'gsap';
+import './i18n.js';
 import { QUALITY, startWatchdog } from './perf.js';
 window.gsap = gsap;
 

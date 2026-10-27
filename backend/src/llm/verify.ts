@@ -9,7 +9,7 @@ const SAN_RE =
   /\bO-O(?:-O)?|\b[KQRBN][a-h]?[1-8]?x?[a-h][1-8](?:=[QRBN])?[+#]?|\b[a-h]x[a-h][1-8](?:=[QRBN])?[+#]?/g;
 /** Eval-speak and engine references that must never appear (R1 + contract). */
 const BANNED_RE =
-  /%|centipawn|\bcp\b|\beval(uation)?\b|\bengine\b|stockfish|\bwin(ning)? (chance|probabilit)|accuracy/i;
+  /%|centipawn|centipe[oó]n|centip[eé]on|\bcp\b|\beval(uation)?\b|evaluaci[oó]n|\bengine\b|\bmotor\b|stockfish|\bwin(ning)? (chance|probabilit)|probabilidad(?:es)? de (?:ganar|victoria)|accuracy|precisi[oó]n|porcentaje/i;
 
 export interface VerifyResult {
   ok: boolean;

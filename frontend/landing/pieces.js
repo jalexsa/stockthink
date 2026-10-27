@@ -13,9 +13,9 @@ const PIECES = {};
 for (const n of NAMES) {
   PIECES[n] = {
     glb:   `${B}landing/models/${n}.glb`,
-    base:  `${B}landing/textures/${n}_base.jpg`,
-    nrm:   `${B}landing/textures/${n}_nrm.jpg`,
-    mr:    `${B}landing/textures/${n}_mr.jpg`,
+    base:  `${B}landing/textures/${n}_base.png`,
+    nrm:   `${B}landing/textures/${n}_nrm.png`,
+    mr:    `${B}landing/textures/${n}_mr.png`,
     ratio: RATIO[n],
   };
 }
@@ -24,8 +24,8 @@ for (const n of NAMES) {
 // ~1 MB of base64. Extracted from the old blob; loaded on demand only when a board scene mounts.
 const BOARD3D = {
   glb:  `${B}landing/models/chess-board.glb`,
-  base: `${B}landing/textures/board_base.jpg`,
-  mr:   `${B}landing/textures/board_mr.jpg`,
+  base: `${B}landing/textures/board_base.png`,
+  mr:   `${B}landing/textures/board_mr.png`,
 };
 
 // scene.js / sections.js / board cinematics read these as globals (kept to preserve the original wiring).

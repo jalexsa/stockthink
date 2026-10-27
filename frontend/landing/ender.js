@@ -1,3 +1,4 @@
+import { translateLabel as L, translateMarkup } from './i18n.js';
 // Finale controller — the live "basement endgame" cinematic (Réti–Tartakower, Vienna 1910).
 // AUTHORING PHASE: the page ships this LIVE WebGL finale while we build the animated game; once the
 // cinematic is approved it bakes back to a <video> (ender-video.js) and the QUALITY.cinema gate returns.
@@ -53,13 +54,13 @@ if (section && canvas) {
   cta.innerHTML =
     '<div class="ender-cta-in">' +
       '<div class="ender-cta-kick">The why behind every move</div>' +
-      '<h2 class="ender-cta-h">Your games hide<br>moments <span class="am">like that</span><svg class="cta-brill" viewBox="0 0 18 19" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path opacity=".3" d="M9,.5a9,9,0,1,0,9,9A9,9,0,0,0,9,.5Z"/><path fill="#1bada6" d="M9,0a9,9,0,1,0,9,9A9,9,0,0,0,9,0Z"/><path fill="#fff" d="M12.57,14.1a.51.51,0,0,1,0,.13.44.44,0,0,1-.08.11l-.11.08-.13,0h-2l-.13,0L10,14.34A.41.41,0,0,1,10,14.1V12.2A.32.32,0,0,1,10,12a.39.39,0,0,1,.1-.08l.13,0h2a.31.31,0,0,1,.24.1.39.39,0,0,1,.08.1.51.51,0,0,1,0,.13Zm-.12-3.93a.17.17,0,0,1,0,.12.41.41,0,0,1-.07.11.4.4,0,0,1-.23.08H10.35a.31.31,0,0,1-.34-.31L9.86,3.4A.36.36,0,0,1,10,3.16a.23.23,0,0,1,.11-.08.27.27,0,0,1,.13,0H12.3a.32.32,0,0,1,.25.1.36.36,0,0,1,.09.24Z"/><path fill="#fff" d="M8.07,14.1a.51.51,0,0,1,0,.13.44.44,0,0,1-.08.11l-.11.08-.13,0h-2l-.13,0-.11-.08a.41.41,0,0,1-.08-.24V12.2a.27.27,0,0,1,0-.13.36.36,0,0,1,.07-.1.39.39,0,0,1,.1-.08l.13,0h2A.31.31,0,0,1,8,12a.39.39,0,0,1,.08.1.51.51,0,0,1,0,.13ZM8,10.17a.17.17,0,0,1,0,.12.41.41,0,0,1-.07.11.4.4,0,0,1-.23.08H5.85a.31.31,0,0,1-.34-.31L5.36,3.4a.36.36,0,0,1,.09-.24.23.23,0,0,1,.11-.08.27.27,0,0,1,.13,0H7.8a.35.35,0,0,1,.25.1.36.36,0,0,1,.09.24Z"/></svg></h2>' +
+      '<h2 class="ender-cta-h">Your games hide<br>moments <span class="am">like that</span><img class="cta-brill" src="' + B0 + 'badges/brilliant.svg" alt=""></h2>' +
       '<div class="ender-cta-btns">' +
-        '<a class="ender-cta-btn" href="' + B0 + '">Analyse your games &rarr;</a>' +
+        '<a class="ender-cta-btn" href="' + B0 + 'app.html">Analyse your games &rarr;</a>' +
         '<a class="ender-cta-btn ender-cta-btn2" href="mailto:abodsaid1996@gmail.com">Contact developer</a>' +
       '</div>' +
     '</div>';
-  document.body.appendChild(cta);
+  document.body.appendChild(cta); translateMarkup(cta);
 
   // ---- front-of-text layer: a canvas stacked ABOVE the CTA copy; the scene renders the flagged hero piece here
   //      so it reads IN FRONT of the text during the final reveal. Empty/idle until the tableau settles. ----
@@ -88,6 +89,7 @@ if (section && canvas) {
     evalBar.append(evFill, evNum);
     overlay.appendChild(evalBar);
   }
+  window.addEventListener('stockthink:languagechange', () => { _capKey=''; updateHud(curT); });
   let lastShowFront = false;   // mirrored from the loop so onScroll can keep the front canvas honest between frames
   function updateHud(t) {
     if (!view) return;
@@ -118,7 +120,7 @@ if (section && canvas) {
           _capKey = b.rating;
           cap.className = 'ender-cap r-' + b.rating;
           if (b.icon) { capIco.src = `${B}badges/${b.icon}`; capIco.style.display = ''; } else { capIco.style.display = 'none'; }   // publicDir → emitted in prod (dist/badges/)
-          capRating.textContent = b.label;
+          capRating.textContent = L(b.label);
           capMove.textContent = b.move;
         }
       }
@@ -176,7 +178,7 @@ if (section && canvas) {
     const s = view && view.scenes; if (!s) return;
     sceneI = Math.max(0, Math.min(s.length - 1, i));
     playing = true; sceneClock = performance.now();
-    navTag.textContent = `${sceneI + 1} / ${s.length}  ·  ${s[sceneI].label}`;
+    navTag.textContent = `${sceneI + 1} / ${s.length}  ·  ${L(s[sceneI].label)}`;
     navTag.classList.add('show');
     if (view && !raf && active) loop();
   }

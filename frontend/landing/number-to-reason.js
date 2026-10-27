@@ -1,3 +1,4 @@
+import { translateLabel as L, translateMarkup } from './i18n.js';
 // ===== Beat 2 — "How we process Stockfish's output" cinematic (data-step 8), rev 4 =====
 // Self-contained vanilla JS. Acts:
 //   ① a Mac desktop with a VS Code project — camera zooms into the IDE; Stockfish runs complex UCI
@@ -11,13 +12,13 @@ import { Reel, Scrubber } from './scrub.js';
   const stage = document.getElementById('n2rStage');
   if (!stage) return;
   const RMQ = matchMedia('(prefers-reduced-motion:reduce)');
-  const NEO = 'https://images.chesscomfiles.com/chess-themes/pieces/neo/150';
+  const NEO = `${import.meta.env.BASE_URL}pieces/chessnut`;
   // Keep local artwork visible in production. These must be static `new URL()` calls so Vite
   // fingerprints and copies the files instead of leaving page-relative paths inside JS strings.
   const ICONS = {
-    finder: new URL('./icons/dock/finder.png', import.meta.url).href,
-    vscode: new URL('./icons/dock/vscode.svg', import.meta.url).href,
-    chrome: new URL('./icons/dock/chrome.svg', import.meta.url).href,
+    finder: new URL('./icons/dock/folder.svg', import.meta.url).href,
+    vscode: new URL('./icons/dock/editor.svg', import.meta.url).href,
+    chrome: new URL('./icons/dock/browser.svg', import.meta.url).href,
     terminal: new URL('./icons/dock/terminal.svg', import.meta.url).href,
     blunder: new URL('./icons/blunder.svg', import.meta.url).href,
   };
@@ -71,7 +72,7 @@ import { Reel, Scrubber } from './scrub.js';
   // every frame. at(ms,fn) schedules on it exactly like setTimeout did (fires at now+ms, chains too).
   const reel = new Reel({ name: 'number → reason', loop: true, endHold: 3000 });
   const at = (ms, fn) => reel.at(ms, fn);
-  const mk = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; };
+  const mk = (tag, cls, html) => { const n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; translateMarkup(n); return n; };
 
   let world, stepEl, capEl, desk, vscode, jsonRow, jsonTab, paneCode, paneJson, paneFacts, termLines, match, mrows, mscan, app, appComment, replay, hostStep, titleCard, cursor, vscodeIcon;
 
@@ -143,13 +144,13 @@ import { Reel, Scrubber } from './scrub.js';
       + '<div class="n2r-ach2">Review</div>'
       + '<div class="n2r-askel"><i></i><i></i><i></i></div>'
       + '<div class="n2r-ahead"><img class="n2r-aico" src="' + ICONS.blunder + '" alt="blunder"><span class="n2r-atitle">Blunder</span>'
-      + '<span class="n2r-amove"><img src="' + NEO + '/bb.png" alt="">Bd6</span></div>'
-      + '<div class="n2r-abody">Your bishop is <b>pinned</b> — it can’t move without losing the queen behind it, so it’s as good as lost.</div>'
+      + '<span class="n2r-amove"><img src="' + NEO + '/bb.svg" alt="">Bd6</span></div>'
+      + '<div class="n2r-abody" data-i18n="landing.demo.bishop">Your bishop is <b>pinned</b> — it can’t move without losing the queen behind it, so it’s as good as lost.</div>'
       + '</div>'
       + '<div class="n2r-acard n2r-amoves"><div class="n2r-ach">Moves</div><div class="n2r-amllist">'
       + '<div class="n2r-mlrow"><span class="n2r-mlnum">16</span><span class="n2r-mlw">Rd1</span><span class="n2r-mlb">Qd8</span></div>'
       + '<div class="n2r-mlrow"><span class="n2r-mlnum">17</span><span class="n2r-mlw">e4</span>'
-      + '<span class="n2r-mlb blun"><img src="' + NEO + '/bb.png" alt="">Bd6<img class="n2r-mlbadge" src="' + ICONS.blunder + '" alt=""></span></div>'
+      + '<span class="n2r-mlb blun"><img src="' + NEO + '/bb.svg" alt="">Bd6<img class="n2r-mlbadge" src="' + ICONS.blunder + '" alt=""></span></div>'
       + '</div></div>'
       + '<div class="n2r-acard n2r-agraph"><div class="n2r-ach">Eval history</div>'
       + '<svg class="n2r-agsvg" viewBox="0 0 100 30" preserveAspectRatio="none">'
@@ -183,13 +184,13 @@ import { Reel, Scrubber } from './scrub.js';
     let h = '';
     for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) h += '<div class="n2r-asq" style="left:' + c * 12.5 + '%;top:' + r * 12.5 + '%;background:' + ((r + c) % 2 ? '#739552' : '#ebecd0') + '"></div>';
     ['d6', 'd8'].forEach((sq) => { const p = xy(sq); h += '<div class="n2r-ahi" style="left:' + p.x + '%;top:' + p.y + '%"></div>'; });
-    for (const sq in APP_POS) { const p = xy(sq); h += '<div class="n2r-ap" style="left:' + p.x + '%;top:' + p.y + "%;background-image:url('" + NEO + '/' + APP_POS[sq] + ".png')\"></div>"; }
+    for (const sq in APP_POS) { const p = xy(sq); h += '<div class="n2r-ap" style="left:' + p.x + '%;top:' + p.y + "%;background-image:url('" + NEO + '/' + APP_POS[sq] + ".svg')\"></div>"; }
     b.innerHTML = h;
   }
 
   const setStep = (n, name) => { reel.cue(0, n + ' · ' + name); };
-  const cap = (txt) => { capEl.textContent = txt; capEl.classList.add('in'); };
-  const capSwap = (txt) => { capEl.classList.remove('in'); at(240, () => { capEl.textContent = txt; capEl.classList.add('in'); }); };
+  const cap = (txt) => { capEl.textContent = L(txt); capEl.classList.add('in'); };
+  const capSwap = (txt) => { capEl.classList.remove('in'); at(240, () => { capEl.textContent = L(txt); capEl.classList.add('in'); }); };
   const capHide = () => capEl.classList.remove('in');
 
   // camera: pan + scale the desktop so `target` is centred at scale k
@@ -326,7 +327,12 @@ import { Reel, Scrubber } from './scrub.js';
 
   // The Reel drives the cinematic: runTimeline = the timeline body, resetAll = its clean state.
   reel.load(runTimeline, resetAll);
-  if (import.meta.env.DEV) { new Scrubber(reel, hostStep || stage.closest('section') || stage); reel.attachCss(stage); }
+  window.addEventListener('stockthink:languagechange', () => {
+    if (RMQ.matches) { resetAll(); if (played) finalFrame(); return; }
+    const time=reel.time(), playing=!reel.paused();
+    reel.rewind(); reel.seek(time); if(playing) reel.play();
+  });
+  if (import.meta.env.DEV) { new Scrubber(reel, hostStep || stage.closest('section') || stage); if (!RMQ.matches) reel.attachCss(stage); }
 
   // Video-like playback: plays (and keeps replaying, with an end-hold) while the stage is on
   // screen; PAUSES when it scrolls away and resumes where it left off when it comes back.

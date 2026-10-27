@@ -11,7 +11,7 @@ describe('renderRich', () => {
   it('tags a legal piece move with the right piece image and strips the letter', () => {
     const html = renderRich('Nf3 was the better way.', [START]);
     expect(html).toContain('san-tag white');
-    expect(html).toContain('/wn.png');
+    expect(html).toContain('/pieces/chessnut/wn.svg');
     expect(html).toContain('>f3</span>');
     expect(html).not.toContain('>Nf3<');
   });
@@ -20,7 +20,7 @@ describe('renderRich', () => {
     const afterSetup = 'rnbqk2r/ppppbppp/5n2/4p3/4P3/5N2/PPPPBPPP/RNBQK2R w KQkq - 4 4';
     const html = renderRich('Now O-O brings the king to safety.', [afterSetup]);
     expect(html).toContain('san-tag');
-    expect(html).toContain('/wk.png');
+    expect(html).toContain('/pieces/chessnut/wk.svg');
   });
 
   it('never tags a bare square — coordinates are not pawn pills', () => {
@@ -41,7 +41,7 @@ describe('renderRich', () => {
     const afterE4d5 = 'rnbqkbnr/ppp1pppp/8/3p4/4P3/8/PPPP1PPP/RNBQKBNR w KQkq d6 0 2';
     const html = renderRich('exd5 opens the center.', [afterE4d5]);
     expect(html).toContain('san-tag');
-    expect(html).toContain('/wp.png');
+    expect(html).toContain('/pieces/chessnut/wp.svg');
   });
 
   it('leaves square mentions and illegal tokens as plain text', () => {
@@ -52,7 +52,7 @@ describe('renderRich', () => {
   it('parses against multiple candidate positions (replies use the after-fen)', () => {
     const afterE4 = 'rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq - 0 1';
     const html = renderRich('Nf6 answers e4.', [START, afterE4]);
-    expect(html).toContain('/bn.png'); // black knight parsed in the reply position
+    expect(html).toContain('/pieces/chessnut/bn.svg'); // black knight parsed in the reply position
   });
 
   it('escapes HTML in the surrounding text', () => {

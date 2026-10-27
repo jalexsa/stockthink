@@ -6,6 +6,18 @@ for /work sessions). Past ~300 lines, /reflect compresses the oldest half into
 LESSONS.md. Entries below 2026-06-12p were migrated verbatim from
 self-improvement/improve/TRACKER.md's daily log (2026-06-12) — history is not rewritten.
 
+- **2026-10-27** · Bilingual release preparation: backed up all 249 initial source files
+  with verified hashes before edits; existing feature/spanish-localization retained.
+  Git write failure was sandbox access, not a corrupt index; elevated probe/refresh worked.
+  Landing captions, Spanish piece agreement and language-preserving review completed.
+  Replaced undocumented graphics/models/textures/video with reproducible GPL artwork
+  and Apache-2.0 Chessnut pieces; Stockfish v18.0.0 provenance verified without changes.
+  Evidence: 267 tests passed (1 fixture guard skipped), 4 real Chromium desktop/mobile
+  tests passed, final build passed; 19 protected files unchanged. npm audit 10→6,
+  production audit zero. GSAP licensing and major dev-tool upgrades remain release tasks.
+  SwiftShader saturated CPU; native Chromium passed. Recorder now closes before encoding.
+  No commit, push, PR or publication. Details: BILINGUAL-RELEASE.md / root license/security audits.
+
 - **2026-07-05b** · /ui · Finale first-play jank killed: view.warmup() renders one frame of every beat
   (compile + texture upload) while the canvas is CSS-invisible, then resets to t=0; front renderer warmed
   too; scene builds at rootMargin 250% + idle-prebuild ~6s after load. Verified headless: warmup runs

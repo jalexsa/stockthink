@@ -12,6 +12,7 @@
  * keeps the Mode A template commentary (R3 — never degrade the baseline).
  */
 
+import { t } from '@common/i18n';
 export type ProgressFn = (message: string) => void;
 
 const API_KEY_STORAGE = 'stockthink.anthropic-key';
@@ -32,7 +33,7 @@ export async function generateViaApi(
   onProgress: ProgressFn,
 ): Promise<string | null> {
   try {
-    onProgress('Asking Claude…');
+    onProgress(t('api.asking'));
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -48,14 +49,14 @@ export async function generateViaApi(
       }),
     });
     if (!res.ok) {
-      onProgress(res.status === 401 ? 'API key rejected.' : `Request failed (${res.status}).`);
+      onProgress(res.status === 401 ? t('api.rejected') : t('api.failed', {status:res.status}));
       return null;
     }
     const data = (await res.json()) as { content?: Array<{ type: string; text?: string }> };
     const text = data.content?.find(b => b.type === 'text')?.text;
     return text ?? null;
   } catch {
-    onProgress('Could not reach the API.');
+    onProgress(t('api.unreachable'));
     return null;
   }
 }
@@ -74,22 +75,22 @@ export async function generateViaWebLLM(
 ): Promise<string | null> {
   try {
     if (!webgpuAvailable()) {
-      onProgress('This browser has no WebGPU — try Chrome or Edge.');
+      onProgress(t('model.noWebgpu'));
       return null;
     }
     if (!webllmEngine) {
-      onProgress('Loading WebLLM…');
+      onProgress(t('model.loading'));
       const mod = (await import(/* @vite-ignore */ WEBLLM_CDN)) as {
         CreateMLCEngine: (
           model: string,
-          opts: { initProgressCallback: (p: { text: string }) => void },
+          opts: { initProgressCallback: (p: { text: string; progress?: number }) => void },
         ) => Promise<typeof webllmEngine>;
       };
       webllmEngine = await mod.CreateMLCEngine(WEBLLM_MODEL, {
-        initProgressCallback: p => onProgress(p.text),
+        initProgressCallback: p => onProgress(p.progress === undefined ? t('model.loading') : t('model.progress', {percent:Math.round(100*p.progress)})),
       });
     }
-    onProgress('Generating commentary locally…');
+    onProgress(t('model.generating'));
     const reply = (await webllmEngine!.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.3,
@@ -97,7 +98,7 @@ export async function generateViaWebLLM(
     })) as { choices?: Array<{ message?: { content?: string } }> };
     return reply.choices?.[0]?.message?.content ?? null;
   } catch {
-    onProgress('Local model failed — keeping the standard commentary.');
+    onProgress(t('model.failed'));
     return null;
   }
 }

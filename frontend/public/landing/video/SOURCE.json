@@ -1,0 +1,14 @@
+{
+  "license": "GPL-3.0-or-later",
+  "source": "self-improvement/scripts/render-free-finale.mjs",
+  "scene": "frontend/landing/ender-scene.js",
+  "models": "self-improvement/scripts/build-free-assets.mjs",
+  "captureFps": 8,
+  "fps": 24,
+  "interpolation": "FFmpeg minterpolate",
+  "seed": 764512,
+  "width": 960,
+  "height": 540,
+  "duration": 45.2,
+  "frames": 362
+}

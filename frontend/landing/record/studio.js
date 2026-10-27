@@ -27,6 +27,7 @@ async function boot() {
   if (SCENE === 'ender') {
     const { createEnderScene, START_FEN } = await import('../ender-scene.js');
     const view = await createEnderScene(canvas);
+    view.setAssembly?.(1); // bake the complete set; assembly itself is scroll-driven on the live page
     // force maximum fidelity regardless of the device tier the module guessed
     view.renderer.setPixelRatio(SS);
     view.resize();

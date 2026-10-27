@@ -13,16 +13,20 @@ export function getLocale(): Locale { return locale; }
 export function setLocale(next: Locale): void {
   locale = next;
   try { localStorage.setItem(STORAGE_KEY, next); } catch { /* storage can be disabled */ }
+  if (typeof document !== 'undefined') document.documentElement.lang = next;
+  if (typeof window !== 'undefined') window.dispatchEvent(new Event('stockthink:languagechange'));
 }
 export function t(key: MessageKey, vars: Record<string, string | number> = {}): string {
   return Object.entries(vars).reduce((s, [name, value]) => s.replaceAll(`{${name}}`, String(value)), resources[locale][key] ?? resources.en[key]);
 }
 export function initLocale(): Locale {
+  locale = 'es';
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored === 'en' || stored === 'es') locale = stored;
     else locale = 'es';
   } catch { /* keep Spanish default */ }
+  if (typeof document !== 'undefined') document.documentElement.lang = locale;
   return locale;
 }
 export function applyStaticTranslations(root: ParentNode = document): void {

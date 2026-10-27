@@ -14,14 +14,19 @@ const NUM_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven'
 const inWords = (n: number): string => NUM_WORDS[n] ?? String(n);
 
 const ROLE_ES: Record<string, string> = { pawn: 'peón', knight: 'caballo', bishop: 'alfil', rook: 'torre', queen: 'dama', king: 'rey' };
+const feminine = (role: string): boolean => role === 'queen' || role === 'rook';
+const roleArticle = (role: string): string => `${feminine(role) ? 'la' : 'el'} ${ROLE_ES[role]}`;
+const indefiniteRole = (role: string): string => `${feminine(role) ? 'una' : 'un'} ${ROLE_ES[role]}`;
+const roleObject = (role: string): string => `${feminine(role) ? 'a la' : 'al'} ${ROLE_ES[role]}`;
+const capital = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 const pieceAt = (p: PieceOn): string => getLocale() === 'es' ? `${ROLE_ES[p.role] ?? p.role} en ${p.square}` : `${p.role} on ${p.square}`;
 const subjectPiece = (p: PieceOn): string => `${p.role === 'queen' || p.role === 'rook' ? 'la' : 'el'} ${pieceAt(p)}`;
 const objectPiece = (p: PieceOn): string => `${p.role === 'queen' || p.role === 'rook' ? 'a la' : 'al'} ${pieceAt(p)}`;
 
 const listTargets = (targets: PieceOn[]): string => {
-  const names = targets.map(t => (getLocale() === 'es' ? objectPiece(t) : (t.role === 'king' ? 'the king' : `the ${pieceAt(t)}`)));
+  const names = targets.map(t => (getLocale() === 'es' ? subjectPiece(t) : (t.role === 'king' ? 'the king' : `the ${pieceAt(t)}`)));
   if (names.length <= 1) return names[0] ?? '';
-  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
+  return `${names.slice(0, -1).join(', ')} ${getLocale() === 'es' ? 'y' : 'and'} ${names[names.length - 1]}`;
 };
 
 function renderPositional(f: PositionalFact): string {
@@ -30,16 +35,16 @@ function renderPositional(f: PositionalFact): string {
       case 'castles': return f.side === 'king' ? 'El enroque protege al rey y conecta las torres.' : 'El enroque largo pone al rey a salvo y activa la torre.';
       case 'passed_pawn': return `Esto crea un peón pasado en ${f.square}: ningún peón rival puede detenerlo en su avance.`;
       case 'simplifies_ahead': return 'Cambiar piezas cuando se tiene ventaja material acerca la victoria.';
-      case 'releases_pin': return `Esto libera de la clavada al ${ROLE_ES[f.role] ?? f.role} de ${f.square}.`;
+      case 'releases_pin': return `Esto libera de la clavada ${roleObject(f.role)} de ${f.square}.`;
       case 'rook_open_file': return `La torre ocupa la columna abierta ${FILES[f.file]}, una vía directa hacia la posición rival.`;
       case 'rook_seventh': return `La torre llega a la séptima fila, en ${f.square}, y ataca desde atrás.`;
       case 'knight_outpost': return `El caballo se instala en ${f.square}, un puesto avanzado que ningún peón rival puede expulsar.`;
       case 'file_battery': return f.partnerRole === 'rook' ? `Las piezas pesadas se duplican en la columna ${FILES[f.file]} y aumentan la presión.` : `Se forma una batería de dama y torre en la columna ${FILES[f.file]}.`;
       case 'fianchetto': return `El alfil domina la gran diagonal desde ${f.square}.`;
-      case 'develops': return `El ${ROLE_ES[f.role] ?? f.role} se desarrolla desde ${f.square}.`;
+      case 'develops': return `${capital(roleArticle(f.role))} se desarrolla en ${f.square}.`;
       case 'improves_shield': return 'Esto refuerza los peones que protegen al rey.';
       case 'center_gain': return 'Esto fortalece el control del centro.';
-      case 'mobility_gain': return `El ${ROLE_ES[f.role] ?? f.role} gana actividad desde su nueva casilla.`;
+      case 'mobility_gain': return `${capital(roleArticle(f.role))} gana actividad desde su nueva casilla.`;
     }
   }
   switch (f.kind) {
@@ -278,19 +283,37 @@ function renderFactEnglish(f: Fact): string | null {
   }
 }
 
+function positionalIdeaEs(f: PositionalFact): string {
+  switch (f.kind) {
+    case 'castles': return 'ponía al rey a salvo';
+    case 'passed_pawn': return `creaba un peón pasado en ${f.square}`;
+    case 'simplifies_ahead': return 'simplificaba la posición con ventaja material';
+    case 'releases_pin': return `liberaba de la clavada ${roleObject(f.role)}`;
+    case 'rook_open_file': return `ocupaba la columna abierta ${FILES[f.file]}`;
+    case 'rook_seventh': return 'instalaba la torre en la séptima fila';
+    case 'knight_outpost': return `instalaba el caballo en el puesto avanzado de ${f.square}`;
+    case 'file_battery': return `duplicaba las piezas pesadas en la columna ${FILES[f.file]}`;
+    case 'fianchetto': return 'situaba el alfil en la gran diagonal';
+    case 'develops': return `desarrollaba ${roleArticle(f.role)}`;
+    case 'improves_shield': return 'reforzaba los peones que protegen al rey';
+    case 'center_gain': return 'fortalecía el control del centro';
+    case 'mobility_gain': return `daba más actividad ${roleObject(f.role)}`;
+  }
+}
+
 const ideaEs = (i: MissedIdea): string => {
   switch (i.what) {
-    case 'defends': return `defendía al ${pieceAt(i.piece)}`;
-    case 'trades': return `cambiaba el ${pieceAt(i.victim)}`;
-    case 'wins_material': return i.role ? `ganaba una ${ROLE_ES[i.role] ?? i.role} por fuerza` : 'ganaba material por fuerza';
-    case 'captures': return `capturaba el ${pieceAt(i.victim)}`;
+    case 'defends': return `defendía ${objectPiece(i.piece)}`;
+    case 'trades': return `cambiaba ${subjectPiece(i.victim)}`;
+    case 'wins_material': return i.role ? `ganaba ${indefiniteRole(i.role)} por fuerza` : 'ganaba material por fuerza';
+    case 'captures': return `capturaba ${subjectPiece(i.victim)}`;
     case 'removes_checks': return 'quitaba todas las opciones de jaque y dejaba las decisiones difíciles al rival';
-    case 'counterattack': return `respondía a la amenaza contra el ${pieceAt(i.threatened)} con una amenaza mayor`;
+    case 'counterattack': return `respondía a la amenaza contra ${subjectPiece(i.threatened)} con una amenaza mayor`;
     case 'open_lines': return 'abría de inmediato líneas de ataque hacia el rey antes de que el defensor pudiera reorganizarse';
-    case 'escapes': return `ponía al ${ROLE_ES[i.role] ?? i.role} a salvo`;
-    case 'wins_tempo': return `ganaba un tiempo atacando al ${pieceAt(i.target)}`;
-    case 'positional': return 'mejoraba la posición';
-    case 'prepares': return `preparaba ${i.idea.what === 'mate_threat' ? `${i.move.san}, con amenaza de mate` : i.idea.what === 'wins_piece' ? `${i.move.san}, ganando el ${pieceAt(i.idea.piece)}` : i.idea.what === 'fork' ? `${i.move.san}, con un tenedor contra ${listTargets(i.idea.targets)}` : `${i.move.san}, clavando al ${pieceAt(i.idea.piece)}`}`;
+    case 'escapes': return `ponía ${roleObject(i.role)} a salvo`;
+    case 'wins_tempo': return `ganaba un tiempo atacando ${objectPiece(i.target)}`;
+    case 'positional': return positionalIdeaEs(i.fact);
+    case 'prepares': return `preparaba ${i.idea.what === 'mate_threat' ? `${i.move.san}, con amenaza de mate` : i.idea.what === 'wins_piece' ? `${i.move.san}, ganando ${subjectPiece(i.idea.piece)}` : i.idea.what === 'fork' ? `${i.move.san}, con un tenedor contra ${listTargets(i.idea.targets)}` : `${i.move.san}, clavando ${objectPiece(i.idea.piece)}`}`;
   }
 };
 
@@ -299,38 +322,39 @@ function renderFactSpanish(f: Fact): string | null {
   switch (f.kind) {
     case 'delivers_mate': return 'Jaque mate: la partida termina aquí.';
     case 'gives_stalemate': return 'Ahogado: la partida termina en tablas.';
-    case 'forced': case 'only_move': return 'Era la única jugada que mantenía la posición.';
+    case 'forced': return 'La única jugada legal.';
+    case 'only_move': return 'Era la única jugada que mantenía la posición.';
     case 'quiet_strength': return 'Una jugada tranquila y profunda, difícil de encontrar.';
     case 'second_candidate': return `Era una de las principales candidatas, aunque solo ${f.best.san} ofrecía un poco más.`;
     case 'hard_to_find': return f.reason === 'retreat' ? `Hay que reconocerlo: ${f.move.san} es una retirada que incluso jugadores fuertes pueden pasar por alto.` : f.reason === 'pawn_break' ? `Hay que reconocerlo: ${f.move.san} es un avance de peón tranquilo cuyo potencial no es evidente.` : `Hay que reconocerlo: ${f.move.san} es una jugada tranquila y difícil de detectar.`;
     case 'wins_free_piece': return `Se gana gratis ${subjectPiece(f.victim)}; no hay una recaptura efectiva.`;
-    case 'captures_higher': return `El cambio es favorable: el ${role(f.attacker)} captura ${subjectPiece(f.victim)}.`;
-    case 'creates_fork': return `${subjectPiece(f.forker)} hace un tenedor contra ${listTargets(f.targets)}: no se pueden salvar todas las piezas.`;
-    case 'creates_pin': return f.against.role === 'king' ? `${subjectPiece(f.pinned)} queda clavado contra el rey y no puede moverse sin perder lo que hay detrás.${f.exploit ? ` Sigue ${f.exploit.san} para aprovechar la clavada.` : ''}` : `${subjectPiece(f.pinned)} queda clavado contra ${subjectPiece(f.against)}; moverlo costaría aún más material.${f.exploit ? ` Sigue ${f.exploit.san} para aprovechar la clavada.` : ''}`;
+    case 'captures_higher': return `El cambio es favorable: ${roleArticle(f.attacker)} captura ${subjectPiece(f.victim)}.`;
+    case 'creates_fork': return `${capital(subjectPiece(f.forker))} hace un tenedor contra ${listTargets(f.targets)}: no se pueden salvar todas las piezas.`;
+    case 'creates_pin': return f.against.role === 'king' ? `${capital(subjectPiece(f.pinned))} queda ${feminine(f.pinned.role) ? 'clavada' : 'clavado'} contra el rey y no puede moverse sin perder lo que hay detrás.${f.exploit ? ` Sigue ${f.exploit.san} para aprovechar la clavada.` : ''}` : `${capital(subjectPiece(f.pinned))} queda ${feminine(f.pinned.role) ? 'clavada' : 'clavado'} contra ${subjectPiece(f.against)}; mover esa pieza costaría aún más material.${f.exploit ? ` Sigue ${f.exploit.san} para aprovechar la clavada.` : ''}`;
     case 'discovered_check': return 'Jaque descubierto: la pieza se aparta y revela un ataque contra el rey.';
-    case 'traps_piece': return `${subjectPiece(f.piece)} rival queda atrapado: ya no tiene casillas seguras.`;
+    case 'traps_piece': return `${capital(subjectPiece(f.piece))} rival queda sin casillas seguras.`;
     case 'mate_threat': return `Se amenaza mate con ${f.mateMove.san} en la siguiente jugada.`;
     case 'wins_tempo': return `Se gana un tiempo al atacar ${objectPiece(f.target)} y obligar al rival a responder.`;
     case 'blocks_check': return 'Se bloquea el jaque sin debilitar la posición.';
     case 'trade': return `Se cambian piezas en igualdad: ${role(f.piece)} por ${role(f.piece)}.`;
     case 'sacrifice': return `Es un sacrificio real de ${role(f.piece)}: se entrega material a cambio del ataque.`;
     case 'defends_piece': return `Esto protege ${objectPiece(f.piece)}, que estaba bajo ataque.`;
-    case 'prepares': return f.idea.what === 'mate_threat' ? `Una jugada preparatoria: alista ${f.move.san}, con amenaza de mate.` : f.idea.what === 'wins_piece' ? `Esto prepara ${f.move.san} para ganar el ${pieceAt(f.idea.piece)}.` : f.idea.what === 'fork' ? `Esto prepara ${f.move.san}, con un tenedor contra ${listTargets(f.idea.targets)}.` : `Esto prepara ${f.move.san} para clavar al ${pieceAt(f.idea.piece)}.`;
+    case 'prepares': return f.idea.what === 'mate_threat' ? `Una jugada preparatoria: alista ${f.move.san}, con amenaza de mate.` : f.idea.what === 'wins_piece' ? `Esto prepara ${f.move.san} para ganar ${subjectPiece(f.idea.piece)}.` : f.idea.what === 'fork' ? `Esto prepara ${f.move.san}, con un tenedor contra ${listTargets(f.idea.targets)}.` : `Esto prepara ${f.move.san} para clavar ${objectPiece(f.idea.piece)}.`;
     case 'positional': return renderPositional(f.fact);
     case 'regression': return renderRegression(f.fact);
-    case 'hangs_piece': return `${subjectPiece(f.piece)} queda indefenso y ${f.capture.san} lo captura.`;
-    case 'ignores_threat': return `${subjectPiece(f.piece)} ya estaba bajo ataque y la jugada no lo defiende: ahora ${f.capture.san} lo gana.`;
+    case 'hangs_piece': return `Esta jugada deja ${subjectPiece(f.piece)} sin defensa y ${f.capture.san} ${feminine(f.piece.role) ? 'la' : 'lo'} captura.`;
+    case 'ignores_threat': return `${capital(subjectPiece(f.piece))} ya estaba bajo ataque y la jugada no atiende la amenaza: ahora ${f.capture.san} ${feminine(f.piece.role) ? 'la' : 'lo'} gana.`;
     case 'invites_capture': return `La respuesta ${f.reply.san} captura ${subjectPiece(f.piece)}.`;
     case 'allows_mate': return f.firstMove ? `Esto permite mate forzado: tras ${f.firstMove.san} no hay defensa (mate en ${f.mateIn}).` : `Esto permite mate forzado en ${f.mateIn}.`;
     case 'allows_fork': return `Ahora ${f.forkMove.san} hace un tenedor contra ${listTargets(f.targets)} y gana material por fuerza.`;
-    case 'refutation': return f.lossRole ? `El problema es ${f.moves[0].san}${f.moves[1] ? ` y, después, ${f.moves[1].san}` : ''}: se pierde la/el ${role(f.lossRole)} por fuerza.` : `El problema es ${f.moves[0].san}, que gana material por fuerza.`;
+    case 'refutation': return f.lossRole ? `El problema es ${f.moves[0].san}${f.moves[1] ? ` y, después, ${f.moves[1].san}` : ''}: se pierde ${roleArticle(f.lossRole)} por fuerza.` : `El problema es ${f.moves[0].san}, que gana material por fuerza.`;
     case 'missed_mate': return `${f.move.san} habría forzado mate en ${f.mateIn}.`;
     case 'missed_free_piece': return `${f.move.san} estaba disponible y ganaba directamente ${subjectPiece(f.victim)}.`;
     case 'missed_fork': return `${f.move.san} habría hecho un tenedor contra ${listTargets(f.targets)}.`;
-    case 'missed_pin': return `${f.move.san} habría clavado al ${pieceAt(f.pinned)} contra el rey.`;
-    case 'missed_trap': return `${f.move.san} habría atrapado al ${pieceAt(f.piece)}.`;
+    case 'missed_pin': return `${f.move.san} habría clavado ${objectPiece(f.pinned)} contra el rey.`;
+    case 'missed_trap': return `${f.move.san} habría atrapado ${objectPiece(f.piece)}.`;
     case 'missed_idea': return `${f.move.san} era mejor: ${f.ideas.map(ideaEs).join(' y ')}.`;
-    case 'abandons_square': return `${subjectPiece({ role: f.role, square: f.from })} defendía ${f.square}, pero se aleja y ${f.reply.san} ocupa esa casilla.`;
+    case 'abandons_square': return `${capital(subjectPiece({ role: f.role, square: f.from }))} defendía ${f.square}, pero se aleja y ${f.reply.san} ocupa esa casilla.`;
     case 'missed_mate_threat': return `${f.move.san} habría preparado una amenaza directa de mate.`;
   }
 }

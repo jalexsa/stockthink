@@ -6,7 +6,7 @@ import { t } from '@common/i18n';
  * coach quips rotate below. Pure DOM/CSS; costs the engines nothing.
  */
 
-const NEO = 'https://images.chesscomfiles.com/chess-themes/pieces/neo/150';
+const NEO = `${import.meta.env.BASE_URL}pieces/chessnut`;
 
 /** The 3×3 ring as [col,row]: each step is a knight move, and it loops. */
 const RING: Array<[number, number]> = [
@@ -28,7 +28,7 @@ export function startLoader(boardEl: HTMLElement, quipEl?: HTMLElement): void {
   for (let row = 0; row < 3; row++)
     for (let col = 0; col < 3; col++)
       html += `<div class="loader-sq ${(row + col) % 2 ? 'dark' : 'light'}" data-sq="${col},${row}" style="left:${col * 33.34}%;top:${row * 33.34}%"></div>`;
-  html += `<img class="loader-knight" src="${NEO}/wn.png" alt="" draggable="false">`;
+  html += `<img class="loader-knight" src="${NEO}/wn.svg" alt="" draggable="false">`;
   boardEl.innerHTML = html;
 
   const knight = boardEl.querySelector<HTMLElement>('.loader-knight')!;

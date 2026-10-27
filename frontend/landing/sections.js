@@ -1,3 +1,4 @@
+import { translateLabel as L, t, applyStaticTranslations } from './i18n.js';
 import { Reel, Scrubber } from './scrub.js';
 
 // ===== SECTION 1 controller (independent of three.js module) =====
@@ -57,18 +58,18 @@ import { Reel, Scrubber } from './scrub.js';
   const ev1 = (ms, fn) => reel1.every(ms, fn);
   function resetGetReady(){
     clear1();
-    const typed=$('pgnTyped'); if(typed){ typed.textContent=''; typed.classList.remove('flash'); }
+    const typed=$('pgnTyped'); if(typed){ typed.textContent=L(''); typed.classList.remove('flash'); }
     const menu=$('ctxMenu'); if(menu) menu.classList.remove('show');
     const paste=$('ctxPaste'); if(paste) paste.classList.remove('hot');
     const pc=$('pasteCursor'); if(pc){ pc.style.transition='none'; pc.style.opacity='0'; pc.classList.remove('clicking'); }
     const fc=$('fakeCursor'); if(fc){ fc.style.transition='none'; fc.style.opacity='0'; fc.classList.remove('clicking'); }
     const btn=$('anBtn'); if(btn){ btn.classList.remove('lit','press','done'); btn.disabled=true; }
-    const lbl=$('anLabel'); if(lbl) lbl.textContent='Analyse game';
+    const lbl=$('anLabel'); if(lbl) lbl.textContent=L('Analyse game');
     $('progWrap')?.classList.remove('show');
     const pf=$('progFill'); if(pf) pf.style.width='0%';
-    const pp=$('progPct'); if(pp) pp.textContent='0%';
-    const pt=$('progText'); if(pt) pt.textContent='Starting engines\u2026';
-    const pq=$('progQuip'); if(pq) pq.textContent='';
+    const pp=$('progPct'); if(pp) pp.textContent=L('0%');
+    const pt=$('progText'); if(pt) pt.textContent=L('Starting engines\u2026');
+    const pq=$('progQuip'); if(pq) pq.textContent=L('');
     $('progBadge')?.classList.remove('show');
     document.getElementById('titleReady')?.classList.remove('lit');
   }
@@ -99,7 +100,7 @@ import { Reel, Scrubber } from './scrub.js';
       fc.style.opacity='1'; fc.style.left=(br.width*0.5-6)+'px'; fc.style.top=(br.height*0.5)+'px'; });
     at1(3760,()=>{ $('anBtn')?.classList.add('press'); $('fakeCursor')?.classList.add('clicking'); });
     at1(3920,()=>{ $('anBtn')?.classList.remove('press'); $('fakeCursor')?.classList.remove('clicking');
-      const lbl=$('anLabel'); if(lbl) lbl.textContent='Analysing\u2026';
+      const lbl=$('anLabel'); if(lbl) lbl.textContent=L('Analysing\u2026');
       $('progWrap')?.classList.add('show'); at1(240,runProgress); });
     at1(4260,()=>{ $('fakeCursor') && ($('fakeCursor').style.opacity='0'); });
   }
@@ -112,7 +113,7 @@ import { Reel, Scrubber } from './scrub.js';
     if(!fill) return;
     const TOTAL=24; let qi=0;
     const showQuip=()=>{ if(!quip) return; quip.classList.add('q-out');
-      at1(150,()=>{ quip.textContent=QUIPS[qi%QUIPS.length]; qi++; quip.classList.remove('q-out'); }); };
+      at1(150,()=>{ quip.textContent=L(QUIPS[qi%QUIPS.length]); qi++; quip.classList.remove('q-out'); }); };
     showQuip();
     const quipH=ev1(950,showQuip);
     const DUR=2400, t0=reel1.time();   // drive the bar off the reel clock so it seeks frame-by-frame
@@ -121,15 +122,15 @@ import { Reel, Scrubber } from './scrub.js';
       const e=p<0.5?4*p*p*p:1-Math.pow(-2*p+2,3)/2;   // easeInOutCubic
       const v=Math.round(e*100);
       fill.style.width=v+'%'; if(pct) pct.textContent=v+'%';
-      if(txt && v<100) txt.textContent='Evaluating position '+Math.min(TOTAL,Math.round(e*TOTAL)+1)+' / '+TOTAL;
+      if(txt && v<100) txt.textContent=t('evaluatingPosition',{done:Math.min(TOTAL,Math.round(e*TOTAL)+1),total:TOTAL});
       if(p>=1){ barH.cancel(); quipH.cancel(); finishProgress(); }
     });
   }
   function finishProgress(){
-    const txt=$('progText'); if(txt) txt.textContent='All 24 positions evaluated.';
-    const quip=$('progQuip'); if(quip) quip.textContent='';
+    const txt=$('progText'); if(txt) txt.textContent=L('All 24 positions evaluated.');
+    const quip=$('progQuip'); if(quip) quip.textContent=L('');
     $('progBadge')?.classList.add('show');
-    const lbl=$('anLabel'); if(lbl) lbl.textContent='Review ready';
+    const lbl=$('anLabel'); if(lbl) lbl.textContent=L('Review ready');
     $('anBtn')?.classList.add('done');
     document.getElementById('titleReady')?.classList.add('lit');
   }
@@ -146,14 +147,14 @@ import { Reel, Scrubber } from './scrub.js';
     const inp=$('ccUser'); if(inp) inp.value='';
     $('ccBox')?.classList.remove('focus');
     const find=$('ccFind'); if(find) find.classList.remove('finding','press');
-    const fl=$('ccFindLabel'); if(fl) fl.textContent='Find games';
+    const fl=$('ccFindLabel'); if(fl) fl.textContent=L('Find games');
     const cur=$('ccCursor'); if(cur){ cur.style.transition='none'; cur.style.opacity='0'; cur.classList.remove('clicking'); }
     $('ccPlayerWrap')?.classList.remove('show');
     $('ccListWrap')?.classList.remove('show');
     document.querySelectorAll('#ccList .cc-row').forEach(r=>{ r.classList.remove('hot','sel','loading','ready'); const s=r.querySelector('[data-status]'); if(s) s.innerHTML=''; });
     const ab=$('ccAnalyse'); if(ab){ ab.disabled=true; ab.classList.remove('lit','finding','done','press'); }
-    const al=$('ccAnalyseLabel'); if(al) al.textContent='Analyse games';
-    const sc=$('ccSelCount'); if(sc) sc.textContent='Select games to analyse';
+    const al=$('ccAnalyseLabel'); if(al) al.textContent=L('Analyse games');
+    const sc=$('ccSelCount'); if(sc) sc.textContent=L('Select games to analyse');
     document.getElementById('titleConnect')?.classList.remove('lit');
   }
   function playChesscomBuild(){
@@ -171,10 +172,10 @@ import { Reel, Scrubber } from './scrub.js';
       cur.style.opacity='1'; cur.style.left=(b.l+b.w*0.5)+'px'; cur.style.top=(b.t+b.h*0.5)+'px'; });
     at2(tEnd+650,()=>{ find.classList.add('press'); cur?.classList.add('clicking'); });
     at2(tEnd+820,()=>{ find.classList.remove('press'); cur?.classList.remove('clicking');
-      box?.classList.remove('focus'); find.classList.add('finding'); if(fl) fl.textContent='Finding\u2026';
+      box?.classList.remove('focus'); find.classList.add('finding'); if(fl) fl.textContent=L('Finding\u2026');
       document.getElementById('titleConnect')?.classList.add('lit'); });
     // player card, then game list
-    at2(tEnd+1550,()=>{ find.classList.remove('finding'); if(fl) fl.textContent='Find games'; $('ccPlayerWrap')?.classList.add('show'); });
+    at2(tEnd+1550,()=>{ find.classList.remove('finding'); if(fl) fl.textContent=L('Find games'); $('ccPlayerWrap')?.classList.add('show'); });
     at2(tEnd+1980,()=>$('ccListWrap')?.classList.add('show'));
     at2(tEnd+2150,()=>{ if(cur) cur.style.opacity='0'; });
     // --- multi-select: tick 3 games, then click "Analyse games" ---
@@ -190,16 +191,16 @@ import { Reel, Scrubber } from './scrub.js';
       at2(tt+500,()=>{ cur?.classList.remove('clicking');
         rowsEls()[idx]?.classList.add('sel');
         const n=document.querySelectorAll('#ccList .cc-row.sel').length;
-        const sc=$('ccSelCount'); if(sc) sc.textContent=n+' game'+(n>1?'s':'')+' selected';
+        const sc=$('ccSelCount'); if(sc) sc.textContent=t(n===1?'selectedGame':'selectedGames',{count:n});
         const ab=$('ccAnalyse'), al=$('ccAnalyseLabel');
-        if(ab){ ab.disabled=false; ab.classList.add('lit'); } if(al) al.textContent='Analyse '+n+' game'+(n>1?'s':''); });
+        if(ab){ ab.disabled=false; ab.classList.add('lit'); } if(al) al.textContent=t('landing.analyseCount',{count:n}); });
       tt+=760;
     });
     // cursor to the Analyse button, click it
     at2(tt,()=>moveCur($('ccAnalyse'),0.5,0.5));
     at2(tt+440,()=>{ $('ccAnalyse')?.classList.add('press'); cur?.classList.add('clicking'); });
     at2(tt+580,()=>{ $('ccAnalyse')?.classList.remove('press'); cur?.classList.remove('clicking');
-      $('ccAnalyse')?.classList.add('finding'); const al=$('ccAnalyseLabel'); if(al) al.textContent='Analysing\u2026';
+      $('ccAnalyse')?.classList.add('finding'); const al=$('ccAnalyseLabel'); if(al) al.textContent=L('Analysing\u2026');
       if(cur) cur.style.opacity='0'; });
     // each selected game, in order: checkbox -> loading spinner -> play button (ready to view)
     PICK.forEach((idx,k)=>{
@@ -207,14 +208,14 @@ import { Reel, Scrubber } from './scrub.js';
       at2(tt+1560+k*620,()=>{ const r=rowsEls()[idx]; if(r){ r.classList.remove('loading'); r.classList.add('ready'); } });
     });
     at2(tt+1560+PICK.length*620+200,()=>{ $('ccAnalyse')?.classList.remove('finding'); $('ccAnalyse')?.classList.add('done');
-      const al=$('ccAnalyseLabel'); if(al) al.textContent='\u2713 3 ready to view'; });
+      const al=$('ccAnalyseLabel'); if(al) al.textContent=L('\u2713 3 ready to view'); });
   }
   reel2.load(playChesscomBuild, resetChesscom);
 
   /* =================== STEP 3: live blunder review ===================
      queen walks d6 -> d4, a pawn takes it, the Blunder badge stamps in,
      the eval swings to White, and the explanation types itself out. */
-  const NEO='https://images.chesscomfiles.com/chess-themes/pieces/neo/150';
+  const NEO=`${import.meta.env.BASE_URL}pieces/chessnut`;
   // position just before the blunder: the queen sits on d6 (everything else is the teaching position)
   // balanced middlegame (material dead-even) — Black's queen will grab the e5 bishop,
   // which is guarded only by the f4-pawn. Black to "move" the blunder Qxe5.
@@ -240,7 +241,7 @@ import { Reel, Scrubber } from './scrub.js';
     }
     for(const sq in REV_POS){ const code=REV_POS[sq]; const xy=sqXY(sq);
       const idAttr = code==='bq' ? ' id="revQueen"' : (sq==='e5' ? ' id="revBishop"' : '');
-      h+='<div class="rp"'+idAttr+' data-sq="'+sq+'" style="left:'+xy.x+'%;top:'+xy.y+"%;background-image:url('"+NEO+'/'+code+".png')\"></div>";
+      h+='<div class="rp"'+idAttr+' data-sq="'+sq+'" style="left:'+xy.x+'%;top:'+xy.y+"%;background-image:url('"+NEO+'/'+code+".svg')\"></div>";
     }
     // the on-square blunder badge that pops onto d4 (reuses the card's badge image — no duplicated data URI)
     const bsq=sqXY('e5'); const ico=$('revCardIco'); const src=ico?ico.src:'';
@@ -258,7 +259,7 @@ import { Reel, Scrubber } from './scrub.js';
     const clean=isBlunder?mv.slice(0,-2):mv;
     const pc=ML_PC[clean[0]];
     let h='';
-    if(pc) h+='<img class="ml-pico" src="'+NEO+'/'+col+pc+'.png" alt="">'+clean.slice(1);
+    if(pc) h+='<img class="ml-pico" src="'+NEO+'/'+col+pc+'.svg" alt="">'+clean.slice(1);
     else h+=clean;
     if(isBlunder) h+='<img class="ml-badge" src="./icons/blunder.svg" alt="??">';
     return h;
@@ -291,18 +292,18 @@ import { Reel, Scrubber } from './scrub.js';
     clear3();
     buildBoard(); // also rebuilds movelog
     const ev=$('revEval'); if(ev) ev.style.height='50%';
-    const et=$('revEvalTop'); if(et){ et.textContent='0.0'; et.classList.remove('lead'); }
-    const eb=$('revEvalBot'); if(eb){ eb.textContent='0.0'; eb.classList.remove('lead'); }
+    const et=$('revEvalTop'); if(et){ et.textContent=L('0.0'); et.classList.remove('lead'); }
+    const eb=$('revEvalBot'); if(eb){ eb.textContent=L('0.0'); eb.classList.remove('lead'); }
     $('revSqBadge')?.classList.remove('show');
     $('revCardHead')?.classList.remove('show');
     $('revIdle')?.classList.remove('hide');
     $('revAnalysing')?.classList.add('hide');
-    const tx=$('revText'); if(tx) tx.textContent='';
+    const tx=$('revText'); if(tx) tx.textContent=L('');
     $('revCaret')?.classList.remove('on');
     resetGraph();
   }
   const NEO_MV=(mv,code)=>{ const piece=/^[KQRBN]/.test(mv);
-    return '<span class="rev-mv">'+(piece?'<img class="rev-mv-ico" src="'+NEO+'/'+code+'.png" alt="">':'')+(piece?mv.slice(1):mv)+'</span>'; };
+    return '<span class="rev-mv">'+(piece?'<img class="rev-mv-ico" src="'+NEO+'/'+code+'.svg" alt="">':'')+(piece?mv.slice(1):mv)+'</span>'; };
   const REV_ESC=(s)=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
   const REV_TOKENS=[ {mv:'Qxe5',code:'bq'}, '?? snaps off the bishop \u2014 but it\u2019s guarded by the f4-pawn. ',
     {mv:'fxe5',code:'wp'}, ' wins the queen back: a whole queen for a bishop.' ];
@@ -326,7 +327,7 @@ import { Reel, Scrubber } from './scrub.js';
         const row=document.createElement('div');
         row.className='ml-row'; row.id='mlrBlunder';
         row.innerHTML='<span class="ml-num">7</span><span class="ml-w"></span>'
-          +'<span class="ml-b ml-blunder"><img class="ml-pico" src="'+NEO+'/bq.png" alt="">xe5<img class="ml-badge" src="./icons/blunder.svg" alt="??"></span>';
+          +'<span class="ml-b ml-blunder"><img class="ml-pico" src="'+NEO+'/bq.svg" alt="">xe5<img class="ml-badge" src="./icons/blunder.svg" alt="??"></span>';
         ml.appendChild(row);
         setTimeout(()=>{ row.classList.add('ml-active'); ml.scrollTop=ml.scrollHeight; },30);
       }
@@ -335,8 +336,8 @@ import { Reel, Scrubber } from './scrub.js';
     T3(1730,()=>{
       $('revSqBadge')?.classList.add('show');
       const ev=$('revEval'); if(ev) ev.style.height='80%';
-      const bot=$('revEvalBot'); if(bot){ bot.textContent='+5.8'; bot.classList.add('lead'); }
-      const top=$('revEvalTop'); if(top) top.textContent='-5.8';
+      const bot=$('revEvalBot'); if(bot){ bot.textContent=L('+5.8'); bot.classList.add('lead'); }
+      const top=$('revEvalTop'); if(top) top.textContent=L('-5.8');
       const cap=$('revCap'); if(cap){ const xy=sqXY('e5'); cap.style.left=xy.x+'%'; cap.style.top=xy.y+'%'; cap.classList.add('on'); }
       showHi('revGuardHi','f4');
       $('revCardHead')?.classList.add('show');
@@ -351,11 +352,11 @@ import { Reel, Scrubber } from './scrub.js';
       const keepEnd=()=>{ if(body) body.scrollTop=body.scrollHeight; };
       let ti=0, ci=0;
       const build=(upto,partial)=>{ let s='';
-        for(let i=0;i<upto;i++){ const t=REV_TOKENS[i]; s+=(typeof t==='string')?REV_ESC(t):NEO_MV(t.mv,t.code); }
+        for(let i=0;i<upto;i++){ const raw=REV_TOKENS[i]; const t=typeof raw==='string'?L(raw):raw; s+=(typeof t==='string')?REV_ESC(t):NEO_MV(t.mv,t.code); }
         if(partial!=null) s+=REV_ESC(partial); return s; };
       const stepFn=()=>{
         if(ti>=REV_TOKENS.length){ const id=setTimeout(()=>$('revCaret')?.classList.remove('on'),450); t3.push(id); return; }
-        const t=REV_TOKENS[ti];
+        const raw=REV_TOKENS[ti]; const t=typeof raw==='string'?L(raw):raw;
         if(typeof t==='string'){ ci++; el.innerHTML=build(ti,t.slice(0,ci)); keepEnd(); if(ci>=t.length){ ti++; ci=0; }
           const id=setTimeout(stepFn,20); t3.push(id); }
         else { el.innerHTML=build(ti+1,null); keepEnd(); ti++; ci=0; const id=setTimeout(stepFn,130); t3.push(id); }
@@ -395,7 +396,7 @@ import { Reel, Scrubber } from './scrub.js';
     }
     for(const sq in POS4){ const code=POS4[sq]; const xy=sqXY(sq);
       const idAttr = sq==='d5' ? ' id="s4Knight"' : (sq==='d1' ? ' id="s4Queen"' : (sq==='c8' ? ' id="s4BlackQ"' : (sq==='g8' ? ' id="s4King"' : (sq==='d8' ? ' id="s4BlackR"' : ''))));
-      h+='<div class="rp"'+idAttr+' data-sq="'+sq+'" style="left:'+xy.x+'%;top:'+xy.y+"%;background-image:url('"+NEO+'/'+code+".png')\"></div>";
+      h+='<div class="rp"'+idAttr+' data-sq="'+sq+'" style="left:'+xy.x+'%;top:'+xy.y+"%;background-image:url('"+NEO+'/'+code+".svg')\"></div>";
     }
     // best-move badge (pops on the knight's square) + good badge (pops on f3) + the check tag near the king
     const e7=sqXY('e7'), f3=sqXY('f3');
@@ -409,8 +410,8 @@ import { Reel, Scrubber } from './scrub.js';
   function s4badgeAt(sq){ const el=$('s4Badge'); if(!el) return; const xy=sqXY(sq); el.style.left=xy.x+'%'; el.style.top=xy.y+'%'; }
   function s4head(icoFile,title,code,moveText){
     const ico=$('s4CardIco'); if(ico) ico.src='./icons/'+icoFile;
-    const t=$('s4CardTitle'); if(t) t.textContent=title;
-    const mv=$('s4CardMove'); if(mv) mv.innerHTML='<img class="rev-mv-ico" src="'+NEO+'/'+code+'.png" alt="">'+moveText;
+    const t=$('s4CardTitle'); if(t) t.textContent=L(title);
+    const mv=$('s4CardMove'); if(mv) mv.innerHTML='<img class="rev-mv-ico" src="'+NEO+'/'+code+'.svg" alt="">'+moveText;
   }
   function s4eval(h,top,bot,lead){
     const e=$('s4Eval'); if(e) e.style.height=h;
@@ -425,7 +426,7 @@ import { Reel, Scrubber } from './scrub.js';
     const keepEnd=()=>{ if(body) body.scrollTop=body.scrollHeight; };
     const stepFn=()=>{
       if(ti>=tokens.length){ doneCb&&doneCb(); return; }
-      const t=tokens[ti];
+      const raw=tokens[ti]; const t=typeof raw==='string'?L(raw):raw;
       if(typeof t==='string'){
         if(ci===0){ seg=document.createElement('span'); el.appendChild(seg); }   // one stable text node per string token
         ci++; seg.textContent=t.slice(0,ci); keepEnd();
@@ -433,7 +434,7 @@ import { Reel, Scrubber } from './scrub.js';
         revReel.at(20, stepFn);
       } else {                                                                    // a move-tag pill — appended ONCE, fades in
         const piece=/^[KQRBN]/.test(t.mv); const sp=document.createElement('span'); sp.className='rev-mv rev-mv-in';
-        sp.innerHTML=(piece?'<img class="rev-mv-ico" src="'+NEO+'/'+t.code+'.png" alt="">':'')+(piece?t.mv.slice(1):t.mv);
+        sp.innerHTML=(piece?'<img class="rev-mv-ico" src="'+NEO+'/'+t.code+'.svg" alt="">':'')+(piece?t.mv.slice(1):t.mv);
         el.appendChild(sp); keepEnd(); ti++; ci=0;
         revReel.at(120, stepFn);
       }
@@ -461,7 +462,7 @@ import { Reel, Scrubber } from './scrub.js';
   const BEST_CAP_TOKENS=[ 'Now ', {mv:'Nxc8',code:'wn'}, ' grabs the queen — a whole queen for a knight.' ];
   // ---- move log (chess-analysis-tab style) ----
   const S4_PC={K:'k',Q:'q',R:'r',B:'b',N:'n'};
-  function mlPiece(mv,color){ const m=S4_PC[mv[0]]; return m?('<img class="ml-pico" src="'+NEO+'/'+color+m+'.png" alt="">'+mv.slice(1)):mv; }
+  function mlPiece(mv,color){ const m=S4_PC[mv[0]]; return m?('<img class="ml-pico" src="'+NEO+'/'+color+m+'.svg" alt="">'+mv.slice(1)):mv; }
   function s4mlReset(){ const el=$('s4Movelog'); if(!el) return;
     el.innerHTML=
       '<div class="ml-row ml-ctx"><span class="ml-num">16</span><span class="ml-w">'+mlPiece('Nd5','w')+'</span><span class="ml-b">c5</span></div>'+
@@ -505,7 +506,7 @@ import { Reel, Scrubber } from './scrub.js';
       s4badgeAt('c8'); $('s4Badge')?.classList.add('show'); s4hi('s4Green','c8',true);
       s4eval('73%','-3.2','+3.2','bot'); s4head('best.svg','Best move','wn','xc8'); s4spikeGraph();
       $('s4Idle')?.classList.add('hide'); $('s4CardHead')?.classList.add('show');
-      const tx=$('s4Text'); if(tx) tx.innerHTML=NEO_MV('Nxc8','wn')+REV_ESC(' wins the queen for a knight — and ')+NEO_MV('Rxc8','br')+REV_ESC(' can only recapture.');
+      const tx=$('s4Text'); if(tx) tx.innerHTML=NEO_MV('Nxc8','wn')+REV_ESC(L(' wins the queen for a knight — and '))+NEO_MV('Rxc8','br')+REV_ESC(L(' can only recapture.'));
       s4mlAdd('<span class="ml-num">18</span><span class="ml-w ml-best">'+mlPiece('Ne7+','w')+'<img class="ml-badge" src="./icons/best.svg"></span><span class="ml-b">'+mlPiece('Kh8','b')+'</span>');
       s4mlAdd('<span class="ml-num">19</span><span class="ml-w ml-best">'+mlPiece('Nxc8','w')+'</span><span class="ml-b ml-best">'+mlPiece('Rxc8','b')+'<img class="ml-badge" src="./icons/best.svg"></span>');
   }
@@ -591,7 +592,7 @@ import { Reel, Scrubber } from './scrub.js';
     h+='<div class="rev-hi" id="'+id+'HiA"></div><div class="rev-hi" id="'+id+'HiB"></div><div class="s4-greenhi" id="'+id+'Green"></div>';
     for(const sq in pos){ const code=pos[sq]; const xy=sqXY(sq);
       const idAttr = (opt.markId && sq===opt.markSq) ? ' id="'+opt.markId+'"' : '';
-      h+='<div class="rp"'+idAttr+' data-sq="'+sq+'" style="left:'+xy.x+'%;top:'+xy.y+"%;background-image:url('"+NEO+'/'+code+".png')\"></div>"; }
+      h+='<div class="rp"'+idAttr+' data-sq="'+sq+'" style="left:'+xy.x+'%;top:'+xy.y+"%;background-image:url('"+NEO+'/'+code+".svg')\"></div>"; }
     b.innerHTML=h;
   }
 
@@ -639,7 +640,7 @@ import { Reel, Scrubber } from './scrub.js';
   const ENG_EXPL='Knight to f7 — a fork on the queen and rook.';
   function engTypeExpl(){ const sk=$('engSkel'), tx=$('engExpText'); if(!tx) return;
     if(sk) sk.style.display='none'; tx.style.display='block'; tx.classList.remove('done'); let c=0;
-    const h=ev7(28,()=>{ if(c<=ENG_EXPL.length){ tx.textContent=ENG_EXPL.slice(0,c); c++; }
+    const h=ev7(28,()=>{ if(c<=L(ENG_EXPL).length){ tx.textContent=L(ENG_EXPL).slice(0,c); c++; }
       else { h.cancel(); tx.classList.add('done'); } }); }
   function fmtNodes(n){ return n>=1e6 ? (n/1e6).toFixed(1)+'M' : Math.round(n/1e3)+'k'; }
   function engRunDepth(){ let d=1,n=0; const de=$('engDepth'),ne=$('engNodes');
@@ -649,10 +650,10 @@ import { Reel, Scrubber } from './scrub.js';
   function resetEngine(){ clear7(); buildEngBoard();
     $('engScan')?.classList.remove('run'); $('engBoard')?.classList.remove('out');
     $('engNet')?.classList.remove('show','result'); const ns=$('engNetSvg'); if(ns) ns.innerHTML='';
-    const ec=$('engCalc'); if(ec){ ec.textContent='Calculating…'; ec.classList.remove('swap'); }
-    const sk=$('engSkel'); if(sk) sk.style.display=''; const tx=$('engExpText'); if(tx){ tx.style.display='none'; tx.textContent=''; tx.classList.remove('done'); }
+    const ec=$('engCalc'); if(ec){ ec.textContent=L('Calculating…'); ec.classList.remove('swap'); }
+    const sk=$('engSkel'); if(sk) sk.style.display=''; const tx=$('engExpText'); if(tx){ tx.style.display='none'; tx.textContent=L(''); tx.classList.remove('done'); }
     $('engHud')?.classList.remove('show'); $('engArrows')?.classList.remove('show'); $('engBest')?.classList.remove('show'); $('engCardHead')?.classList.remove('show');
-    const g=$('engArrowG'); if(g) g.innerHTML=''; const de=$('engDepth'); if(de) de.textContent='1'; const ne=$('engNodes'); if(ne) ne.textContent='0'; }
+    const g=$('engArrowG'); if(g) g.innerHTML=''; const de=$('engDepth'); if(de) de.textContent=L('1'); const ne=$('engNodes'); if(ne) ne.textContent=L('0'); }
   // The cinematic body — registered on engReel (build); resetEngine is its reset hook.
   function engBuild(){
     at7(500,()=>$('engScan')?.classList.add('run'), 'scan');            // scan sweeps the board
@@ -660,7 +661,7 @@ import { Reel, Scrubber } from './scrub.js';
     at7(2950,()=>{ engBuildNet(); $('engNet')?.classList.add('show');   // edges draw in two ramped stages
       $('engHud')?.classList.add('show'); engRunDepth(); }, 'neural net');
     at7(4250,()=>{ const ec=$('engCalc'); if(!ec) return;               // stage 2 begins → swap the loader word
-      ec.classList.add('swap'); at7(260,()=>{ ec.textContent='Processing…'; ec.classList.remove('swap'); }); }, 'processing');
+      ec.classList.add('swap'); at7(260,()=>{ ec.textContent=L('Processing…'); ec.classList.remove('swap'); }); }, 'processing');
     at7(5800,()=>{ $('engNet')?.classList.add('result'); $('engHud')?.classList.remove('show'); }, 'result · Nxf7'); // net + word fade → Nxf7 pops
     at7(7100,()=>$('engNet')?.classList.remove('show'));               // the white panel (with result) fades out
     at7(7450,()=>$('engBoard')?.classList.remove('out'), 'board returns');  // board returns
@@ -670,7 +671,7 @@ import { Reel, Scrubber } from './scrub.js';
   }
   function engStaticEnd(){   // reduced-motion: jump straight to the resolved frame
     engDrawBest(); $('engArrows')?.classList.add('show'); $('engBest')?.classList.add('show'); $('engCardHead')?.classList.add('show');
-    const sk=$('engSkel'); if(sk) sk.style.display='none'; const tx=$('engExpText'); if(tx){ tx.style.display='block'; tx.textContent=ENG_EXPL; tx.classList.add('done'); }
+    const sk=$('engSkel'); if(sk) sk.style.display='none'; const tx=$('engExpText'); if(tx){ tx.style.display='block'; tx.textContent=L(ENG_EXPL); tx.classList.add('done'); }
   }
   engReel.load(engBuild, resetEngine);
 
@@ -703,13 +704,13 @@ import { Reel, Scrubber } from './scrub.js';
       n.el&&n.el.classList.add('hot'); T5(320,()=>n.el&&n.el.classList.remove('hot')); }));
   }
   function resetEval(){ clear5(); buildNet(); buildEvalBoard();
-    const d=$('evalDepth'); if(d) d.textContent='0'; const f=$('evalDepthFill'); if(f) f.style.width='0%';
+    const d=$('evalDepth'); if(d) d.textContent=L('0'); const f=$('evalDepthFill'); if(f) f.style.width='0%';
     $('evalBest')?.classList.remove('show'); const p=$('nnPulse'); if(p) p.style.opacity='0'; }
   function playEval(){
     resetEval();
     const depthEl=$('evalDepth'), fill=$('evalDepthFill');
     if(RM()){ placeAt($('s7Knight'),'d5'); s4hi('evalBoardGreen','d5',true);
-      if(depthEl) depthEl.textContent='24'; if(fill) fill.style.width='100%'; $('evalBest')?.classList.add('show'); return; }
+      if(depthEl) depthEl.textContent=L('24'); if(fill) fill.style.width='100%'; $('evalBest')?.classList.add('show'); return; }
     const D=24, t0=performance.now(), DUR=2200;
     (function tick(now){ const p=Math.min(1,(now-t0)/DUR);
       if(depthEl) depthEl.textContent=Math.round(p*D); if(fill) fill.style.width=(p*100)+'%';
@@ -731,17 +732,17 @@ import { Reel, Scrubber } from './scrub.js';
   function buildExBoard(){ buildAbsBoard('exBoard',POS_EX,{}); }
   function resetExplain(){ clear6(); buildExBoard();
     document.querySelectorAll('#exChips .chip').forEach(c=>c.classList.remove('in','lit'));
-    $('exScan')?.classList.remove('run'); const t=$('exText'); if(t) t.textContent=''; $('exCaret')?.classList.remove('on'); }
+    $('exScan')?.classList.remove('run'); const t=$('exText'); if(t) t.textContent=L(''); $('exCaret')?.classList.remove('on'); }
   function playExplain(){
     resetExplain();
     const chips=[...document.querySelectorAll('#exChips .chip')];
     if(RM()){ s4hi('exBoardGreen','d5',true); chips.forEach(c=>c.classList.add('in','lit'));
-      const t=$('exText'); if(t) t.textContent=EX_TEXT; return; }
+      const t=$('exText'); if(t) t.textContent=L(EX_TEXT); return; }
     T6(300,()=>s4hi('exBoardGreen','d5',true));
     T6(550,()=>$('exScan')?.classList.add('run'));
     chips.forEach((c,i)=>{ T6(900+i*240,()=>c.classList.add('in')); T6(1100+i*240,()=>c.classList.add('lit')); });
     T6(2150,()=>{ const tx=$('exText'); if(!tx) return; $('exCaret')?.classList.add('on'); let c=0;
-      const id=setInterval(()=>{ if(c<=EX_TEXT.length){ tx.textContent=EX_TEXT.slice(0,c); c++; }
+      const id=setInterval(()=>{ if(c<=L(EX_TEXT).length){ tx.textContent=L(EX_TEXT).slice(0,c); c++; }
         else { clearInterval(id); T6(500,()=>$('exCaret')?.classList.remove('on')); } },20); i6.push(id); });
   }
 
@@ -774,15 +775,15 @@ import { Reel, Scrubber } from './scrub.js';
     T7(1500,()=>ps.forEach(p=>p.style.opacity='0'));
   }
   function resetLoop(){ clear7(); buildPipe(); loopN=0; conceptI=0;
-    const ul=$('conceptList'); if(ul) ul.innerHTML=''; const cnt=$('loopCount'); if(cnt) cnt.textContent='0';
-    const d=$('loopDay'); if(d){ d.textContent='v1 · day 1'; d.classList.remove('tick'); } }
+    const ul=$('conceptList'); if(ul) ul.innerHTML=''; const cnt=$('loopCount'); if(cnt) cnt.textContent=L('0');
+    const d=$('loopDay'); if(d){ d.textContent=L('v1 · day 1'); d.classList.remove('tick'); } }
   function playLoop(){
     resetLoop();
     if(RM()){ const ul=$('conceptList'); if(ul) ['Greek gift sacrifice','zwischenzug','rook lift','prophylaxis'].forEach(c=>{
         const li=document.createElement('li'); li.innerHTML='<span class="plus">+</span>'+c; li.classList.add('in'); ul.appendChild(li); });
-      const cnt=$('loopCount'); if(cnt) cnt.textContent='131'; const d=$('loopDay'); if(d){ d.textContent='v2 · day 2'; d.classList.add('tick'); } return; }
+      const cnt=$('loopCount'); if(cnt) cnt.textContent=L('131'); const d=$('loopDay'); if(d){ d.textContent=L('v2 · day 2'); d.classList.add('tick'); } return; }
     T7(400,loopPass); I7(2400,loopPass);
-    T7(5000,()=>{ const d=$('loopDay'); if(d){ d.textContent='v2 · day 2'; d.classList.add('tick'); } });
+    T7(5000,()=>{ const d=$('loopDay'); if(d){ d.textContent=L('v2 · day 2'); d.classList.add('tick'); } });
   }
 
   /* =================== steps 3 & 4: board eval (unchanged) =================== */
@@ -805,6 +806,14 @@ import { Reel, Scrubber } from './scrub.js';
     if(n==='3'){ if(!revReel.claimed) revReel.rewind(); }
     if(n==='7'){ if(!engReel.claimed) engReel.rewind(); } }
 
+  window.addEventListener('stockthink:languagechange', () => {
+    for (const [reel,n] of [[reel1,'1'],[reel2,'2'],[revReel,'3'],[engReel,'7']]) {
+      const time=reel.time(), playing=!reel.paused();
+      reel.rewind();
+      if(fired[n]) { reel.seek(time); if(playing) reel.play(); }
+    }
+    applyStaticTranslations();
+  });
   // ----- REVEAL / OUTRO: trigger earlier so content animates while still on screen -----
   const revealIO=new IntersectionObserver((entries)=>{
     entries.forEach(e=>{

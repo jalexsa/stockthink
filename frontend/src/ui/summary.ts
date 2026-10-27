@@ -5,6 +5,7 @@
 import type { AnnotatedReport } from '@backend/analyze';
 import { badgeHtml, CLASS_COLORS, CLASS_ORDER } from './badges';
 import { t } from '@common/i18n';
+import { openingDisplay } from '@common/opening-name';
 
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -42,7 +43,7 @@ export function renderSummary(el: HTMLElement, report: AnnotatedReport): void {
           <div class="est-elo">${t('estimatedRating', { rating: b.estimatedElo })}</div>
         </div>
       </div>
-      ${report.opening ? `<div class="opening-name">${esc(report.opening)}</div>` : ''}
+      ${report.opening ? `<div class="opening-name">${esc(openingDisplay(report.opening))}</div>` : ''}
       <table class="counts">${rows}</table>
     </div>`;
 }

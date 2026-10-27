@@ -55,6 +55,8 @@ const ROLE_NAME: Record<Role, string> = {
 const roleName = (r: Role): string => getLocale() === 'es'
   ? ({ pawn: 'peón', knight: 'caballo', bishop: 'alfil', rook: 'torre', queen: 'dama', king: 'rey' } as Record<Role, string>)[r]
   : ROLE_NAME[r];
+const roleArticle = (r: Role): string => `${r === 'rook' || r === 'queen' ? 'la' : 'el'} ${roleName(r)}`;
+const roleObject = (r: Role): string => `${r === 'rook' || r === 'queen' ? 'a la' : 'al'} ${roleName(r)}`;
 
 const SQUARE = (sq: number): string =>
   'abcdefgh'[sq & 7] + String((sq >> 3) + 1);
@@ -138,7 +140,7 @@ const outcomeClause = (o: LineOutcome): string =>
   getLocale() === 'es'
     ? o.kind === 'mate'
       ? o.mateIn === 1 ? 'fuerza mate de inmediato' : 'fuerza mate'
-      : `gana un ${roleName(o.pieceWon ?? 'knight')}`
+      : `gana ${o.pieceWon === 'queen' || o.pieceWon === 'rook' ? 'una' : 'un'} ${roleName(o.pieceWon ?? 'knight')}`
     : o.kind === 'mate'
     ? o.mateIn === 1
       ? 'it forces checkmate on the spot'
@@ -159,22 +161,24 @@ function whyClause(before: Chess, move: NormalMove): string | null {
   afterPos.play(move);
   const board = afterPos.board;
   const role = (sq: number): string => roleName(board.get(sq)?.role ?? 'pawn');
+  const article = (sq: number): string => roleArticle(board.get(sq)?.role ?? 'pawn');
+  const object = (sq: number): string => roleObject(board.get(sq)?.role ?? 'pawn');
 
   if (createsMateThreat(before, move)) return getLocale() === 'es' ? 'amenazando mate en la siguiente jugada' : 'threatening checkmate next move';
   const fork = createsFork(before, move);
-  if (fork.length >= 2) return getLocale() === 'es' ? `haciendo un tenedor contra el ${role(fork[0])} y el ${role(fork[1])}` : `forking the ${role(fork[0])} and the ${role(fork[1])}`;
+  if (fork.length >= 2) return getLocale() === 'es' ? `haciendo un tenedor contra ${article(fork[0])} y ${article(fork[1])}` : `forking the ${role(fork[0])} and the ${role(fork[1])}`;
   // a pinned PAWN is rarely the story — only narrate piece pins (W3)
   const pins = pinsCreatedEx(before, move).filter(p => board.get(p.pinned)?.role !== 'pawn');
   if (pins.length) {
     const p = pins[0];
     return p.absolute
-      ? getLocale() === 'es' ? `clavando al ${role(p.pinned)} contra el rey` : `pinning the ${role(p.pinned)} to the king`
-      : getLocale() === 'es' ? `clavando al ${role(p.pinned)} contra el ${role(p.against)}` : `pinning the ${role(p.pinned)} against the ${role(p.against)}`;
+      ? getLocale() === 'es' ? `clavando ${object(p.pinned)} contra el rey` : `pinning the ${role(p.pinned)} to the king`
+      : getLocale() === 'es' ? `clavando ${object(p.pinned)} contra ${article(p.against)}` : `pinning the ${role(p.pinned)} against the ${role(p.against)}`;
   }
   const trapped = trapsPieces(before, move);
-  if (trapped.length) return getLocale() === 'es' ? `atrapando al ${role(trapped[0])}: no tiene casillas seguras` : `trapping the ${role(trapped[0])} — it has no safe square`;
+  if (trapped.length) return getLocale() === 'es' ? `atrapando ${object(trapped[0])}: no tiene casillas seguras` : `trapping the ${role(trapped[0])} — it has no safe square`;
   const tempo = winsTempo(before, move);
-  if (tempo !== null) return getLocale() === 'es' ? `atacando al ${role(tempo)}` : `attacking the ${role(tempo)}`;
+  if (tempo !== null) return getLocale() === 'es' ? `atacando ${object(tempo)}` : `attacking the ${role(tempo)}`;
   return null;
 }
 
@@ -202,16 +206,16 @@ function positionalWhy(f: PositionalFact): string {
       case 'castles': return f.side === 'king' ? 'enrocando corto para proteger al rey y conectar las torres' : 'enrocando largo para poner al rey a salvo y activar la torre';
       case 'passed_pawn': return `creando un peón pasado en ${f.square} que ningún peón rival puede detener`;
       case 'simplifies_ahead': return 'simplificando la posición con ventaja material';
-      case 'releases_pin': return `liberando de la clavada al ${roleName(f.role)}`;
+      case 'releases_pin': return `liberando de la clavada ${roleObject(f.role)}`;
       case 'rook_open_file': return `ocupando la columna abierta ${'abcdefgh'[f.file]}`;
       case 'rook_seventh': return `llevando la torre a la séptima fila, en ${f.square}`;
       case 'knight_outpost': return `instalando el caballo en el puesto avanzado de ${f.square}`;
       case 'file_battery': return `duplicando las piezas pesadas en la columna ${'abcdefgh'[f.file]}`;
       case 'fianchetto': return 'fianchetando el alfil en la gran diagonal';
-      case 'develops': return `desarrollando el ${roleName(f.role)} desde ${f.square}`;
+      case 'develops': return `desarrollando ${roleArticle(f.role)} en ${f.square}`;
       case 'improves_shield': return 'reforzando los peones que protegen al rey';
       case 'center_gain': return 'fortaleciendo el control del centro';
-      case 'mobility_gain': return `dándole más actividad al ${roleName(f.role)}`;
+      case 'mobility_gain': return `dándole más actividad ${roleObject(f.role)}`;
     }
   }
   switch (f.kind) {
@@ -272,8 +276,8 @@ function reasonClauses(before: Chess, move: NormalMove, punish: boolean): string
   const isEp = piece?.role === 'pawn' && (move.from & 7) !== (move.to & 7) && !victim;
 
   if (victim) {
-    const target = getLocale() === 'es' ? `${roleName(victim.role)} de ${SQUARE(move.to)}` : `the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)}`;
-    clauses.push(getLocale() === 'es' ? (punish && seeCapture(before, move) >= 0 ? `ganando el ${target}` : `capturando el ${target}`) : punish && seeCapture(before, move) >= 0 ? `winning ${target}` : `taking ${target}`);
+    const target = getLocale() === 'es' ? `${roleArticle(victim.role)} de ${SQUARE(move.to)}` : `the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)}`;
+    clauses.push(getLocale() === 'es' ? (punish && seeCapture(before, move) >= 0 ? `ganando ${target}` : `capturando ${target}`) : punish && seeCapture(before, move) >= 0 ? `winning ${target}` : `taking ${target}`);
   } else if (isEp) {
     clauses.push(getLocale() === 'es' ? 'capturando al paso' : 'capturing en passant');
   }
@@ -317,7 +321,7 @@ function describeMove(
   const check = !mate && after.isCheck();
 
   if (mate) {
-    const cap = victim ? (getLocale() === 'es' ? `capturando el ${roleName(victim.role)} de ${SQUARE(move.to)} y dando ` : `taking the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)} and delivering `) : '';
+    const cap = victim ? (getLocale() === 'es' ? `capturando ${roleArticle(victim.role)} de ${SQUARE(move.to)} y dando ` : `taking the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)} and delivering `) : '';
     return getLocale() === 'es' ? `${lead} ${san}: ${cap}jaque mate; la partida termina aquí.` : `${lead} ${san} — ${cap}checkmate, the game would end right here!`;
   }
 
@@ -329,7 +333,7 @@ function describeMove(
   else clauses = reasonClauses(pos, move, mode === 'punish');
 
   // honest fallback: no verified purpose found — name the move, claim nothing
-  if (!clauses.length) clauses = [getLocale() === 'es' ? `llevando el ${roleName(piece?.role ?? 'pawn')} a ${SQUARE(move.to)}` : `bringing the ${ROLE_NAME[piece?.role ?? 'pawn']} to ${SQUARE(move.to)}`];
+  if (!clauses.length) clauses = [getLocale() === 'es' ? `llevando ${roleArticle(piece?.role ?? 'pawn')} a ${SQUARE(move.to)}` : `bringing the ${ROLE_NAME[piece?.role ?? 'pawn']} to ${SQUARE(move.to)}`];
 
   const body = clauses.join(getLocale() === 'es' ? ' y ' : ' and ');
   return getLocale() === 'es' ? (check ? `${lead} ${san}: ${body}, con jaque.` : `${lead} ${san}: ${body}.`) : check ? `${lead} ${san} — ${body}, with check.` : `${lead} ${san} — ${body}.`;
@@ -462,7 +466,7 @@ export function renderSpotlightCard(
   el.innerHTML = `
     <div class="spotlight-card ${kind}">
       <div class="spot-head">
-        <span class="spot-tag">${kind === 'best' ? `✨ ${t('best')}` : `🔍 ${t('seeWhyFails')}`}</span>
+        <span class="spot-tag">${kind === 'best' ? `✨ ${t('best')}` : t('seeWhyFails')}</span>
         <button class="spot-exit" title="${t('spotBack')}">✕</button>
       </div>
       <div class="spot-title">${renderRich(title, [steps[0].fen])}</div>
@@ -470,7 +474,7 @@ export function renderSpotlightCard(
       ${step.note ? `<div class="spot-note">${esc(step.note)}</div>` : ''}
       <div class="spot-dots">${dots}</div>
       <div class="spot-controls">
-        <button class="spot-btn" data-nav="prev" ${i === 0 ? 'disabled' : ''}>◀ ${t('backToReview')}</button>
+        <button class="spot-btn" data-nav="prev" ${i === 0 ? 'disabled' : ''}>◀ ${t('previousMove')}</button>
         <button class="spot-btn primary" data-nav="next">${last ? t('gotIt') : t('next')}</button>
       </div>
       <div class="spot-hint">${t('spotHint')}</div>
@@ -499,8 +503,8 @@ export function renderTryCard(
   const body = m
     ? `
       <div class="spot-verdict">
-        <img class="spot-badge" src="${badgeUrl(m.classification)}" alt="${m.classification}" draggable="false">
-        <span class="spot-verdict-label"><span class="san">${renderRich(m.san, [m.fenBefore])}</span> is <span style="color:${CLASS_COLORS[m.classification]}">${headline(m.classification)}</span></span>
+        <img class="spot-badge" src="${badgeUrl(m.classification)}" alt="${t(m.classification)}" draggable="false">
+        <span class="spot-verdict-label"><span class="san">${renderRich(m.san, [m.fenBefore])}</span> ${t('moveIs')} <span style="color:${CLASS_COLORS[m.classification]}">${headline(m.classification)}</span></span>
         <span class="spot-eval">${formatEval(m.evalAfter)}</span>
       </div>
       <div class="spot-caption you">${renderRich(composeComment(m).text, [m.fenBefore, m.fenAfter])}</div>`

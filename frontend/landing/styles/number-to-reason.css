@@ -16,6 +16,9 @@
   body.light .n2r-stage{--bg:#eef1ec;--ink:#16201a;--mute:#76857b;--line:#d7ded7;--card:rgba(0,0,0,.03);
     --accent-dim:rgba(111,194,74,.18);--white:#ffffff;box-shadow:0 26px 70px rgba(0,0,0,.18),inset 0 0 0 1px var(--line)}
   .n2r-stage.play{opacity:1;transition:opacity .4s linear}
+  @media (prefers-reduced-motion:reduce){
+    .n2r-stage,.n2r-stage *{transition:none!important;animation:none!important}
+  }
   .n2r-vignette{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .3s linear;
     background:radial-gradient(120% 120% at 50% 42%,transparent 44%,rgba(0,0,0,.4) 100%)}
   .n2r-stage.play .n2r-vignette{opacity:1}

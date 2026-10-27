@@ -12,6 +12,15 @@ into the new version section as you go.
 ## [Unreleased]
 
 ### Added
+- Completed landing-page Spanish/English captions, shared persistent language
+  controls, accessible labels and reduced-motion presentation. Added Chromium
+  desktop/mobile PGN coverage and translation resource parity tests.
+- Original reproducible GPL graphics, models and textures; Apache-2.0 Chessnut
+  pieces with bundled license/copyright. Added asset provenance and release audits.
+- Natural Spanish agreement for chess pieces, localized common opening names
+  (display only), and language-separated optional AI commentary.
+- Compatible patches for fflate, nanoid, postcss and source-map-js; six
+  development-only findings remain documented without major upgrades.
 - Bilingual English/Latin American Spanish interface for the analysis app, with
   Spanish as the default, a persistent in-app language selector, localized
   classifications and verified fact-based explanations. The chess-analysis

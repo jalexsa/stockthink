@@ -1,7 +1,7 @@
 # Landing page (`frontend/landing/`)
 
 The marketing/landing page — a **self-contained Vite multi-page entry**, separate
-from the analysis app (root `index.html` → `frontend/src/`). Three.js + GSAP are
+from the analysis app (`app.html` → `frontend/src/`). Three.js + GSAP are
 code-split here so the app bundle never pays for the 3D.
 
 Was one 5.4 MB HTML file; de-bloated + split 2026-06-16.
@@ -21,14 +21,17 @@ Was one 5.4 MB HTML file; de-bloated + split 2026-06-16.
 | `styles/steps-layout.css` | step shell, editorial left/right columns, **in-view/exit reveal transitions** (the step framework) | |
 | `styles/steps-demos.css` | per-step demo styling (paste / chess.com / review / best-move) | |
 | `styles/how-it-works.css` | the hook morph + How-It-Works section | |
-| `icons/*.svg` | 10 chess.com badge icons (were 64 KB of inline base64 in the HTML) | |
+| `icons/*.svg` | original GPL badge/learning artwork; reproducible from the asset generator | |
+| `i18n.js` | shared locale, static markup and complete cinematic caption translation | |
 
 ## Assets (served, not bundled)
-`frontend/public/landing/models/*.glb` (6 pieces) + `textures/*_{base,nrm,mr}.jpg`
-(18 PBR maps). Referenced at runtime with `import.meta.env.BASE_URL` so they resolve
-under `/` (dev) and `/stockthink/` (prod). Editable 3D masters live OUTSIDE the repo
-at `~/stockthink-3d-source/` (board + parametric render HTMLs, for a future endgame
-cinematic).
+`frontend/public/landing/models/*.glb` (6 pieces) + `textures/*_{base,nrm,mr}.png`
+(18 piece PBR maps plus 2 board maps). Referenced with `import.meta.env.BASE_URL`
+under `/` (dev) and `/stockthink/` (prod). The current editable geometry/texture
+source is `self-improvement/scripts/build-free-assets.mjs` (`npm run assets:build`).
+The optional finale video is rendered by `render-free-finale.mjs`; its local
+Vite recording studio is developer tooling. See root `LICENSES.md` for attribution
+and remaining publication questions.
 
 ## Dev / build
 - Dev URL: `http://localhost:5173/frontend/landing/index.html`
@@ -36,7 +39,7 @@ cinematic).
 - Needs WebGL for the 3D hero. Without it (headless/software-GL, locked-down GPUs)
   the page **degrades gracefully** — `main.js` catches the failure, adds `body.no-hero`,
   and the steps/nav/demos still work. The 3D hero stays blank there.
-- This is **not yet** the public root; flipping `/` to the landing is a separate call.
+- Root `index.html` redirects here; the landing links to `app.html` for analysis.
 
 ## "To change X, edit here"
 | Want to… | Edit |
