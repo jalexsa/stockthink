@@ -8,6 +8,7 @@ import { composeComment, type VariationChip } from '@backend/compose/compose';
 import type { EvalScore } from '@backend/analysis/winprob';
 import { badgeHtml, CLASS_COLORS } from './badges';
 import { renderRich } from './santag';
+import { t } from '@common/i18n';
 
 /** "+1.3" / "−0.5" / "M5" — numbers belong to chips/bars, not prose. */
 export function formatEval(ev: EvalScore): string {
@@ -21,17 +22,17 @@ const esc = (s: string): string =>
 
 export const headline = (c: AnnotatedMove['classification']): string => {
   switch (c) {
-    case 'best': return 'the best move';
-    case 'book': return 'a book move';
-    case 'forced': return 'forced';
-    case 'brilliant': return 'brilliant!';
-    case 'great': return 'a great move';
-    case 'excellent': return 'excellent';
-    case 'good': return 'good';
-    case 'inaccuracy': return 'an inaccuracy';
-    case 'mistake': return 'a mistake';
-    case 'miss': return 'a miss';
-    case 'blunder': return 'a blunder';
+    case 'best': return t('headlineBest');
+    case 'book': return t('headlineBook');
+    case 'forced': return t('headlineForced');
+    case 'brilliant': return t('headlineBrilliant');
+    case 'great': return t('headlineGreat');
+    case 'excellent': return t('headlineExcellent');
+    case 'good': return t('headlineGood');
+    case 'inaccuracy': return t('headlineInaccuracy');
+    case 'mistake': return t('headlineMistake');
+    case 'miss': return t('headlineMiss');
+    case 'blunder': return t('headlineBlunder');
   }
 };
 
@@ -41,9 +42,9 @@ export function renderCoachThinking(el: HTMLElement, san: string): void {
     <div id="commentary-card">
       <div class="bubble">
         <div class="verdict-row">
-          <span class="verdict-label">You played <span class="san">${esc(san)}</span></span>
+          <span class="verdict-label">${t('youPlayed')} <span class="san">${esc(san)}</span></span>
         </div>
-        <div class="commentary-text live-thinking">Checking your move…</div>
+        <div class="commentary-text live-thinking">${t('checkMove')}</div>
       </div>
     </div>`;
 }
@@ -61,8 +62,8 @@ export function renderCoach(
     el.innerHTML = `
       <div id="commentary-card">
         <div class="bubble">
-          <div class="verdict-row"><span class="verdict-label">Game Review</span></div>
-          <div class="commentary-text">${opening}Use ← → (or click a move) to step through the game — or move a piece to try your own idea.</div>
+          <div class="verdict-row"><span class="verdict-label">${t('gameReview')}</span></div>
+          <div class="commentary-text">${opening}${t('reviewDirections')}</div>
         </div>
       </div>`;
     return;
@@ -74,10 +75,10 @@ export function renderCoach(
   // explains the moves one step at a time instead.
   const ctaLabel = (chip: (typeof comment.chips)[number]): string =>
     chip.kind === 'refutation'
-      ? '🔍 See why it fails'
+      ? t('seeWhyFails')
       : isBadMove
-        ? '✨ Show me the best move'
-        : '✨ What did the engine prefer?';
+        ? t('showBestMove')
+        : t('enginePreference');
   const chipsHtml = comment.chips
     .map(
       (chip, i) => `
@@ -89,7 +90,7 @@ export function renderCoach(
   el.innerHTML = `
     <div id="commentary-card">
       <div class="bubble">
-        ${live ? '<div class="live-row"><span class="live-tag">Your move</span><button id="live-back" title="Return to the game">↩ Back to review</button></div>' : ''}
+        ${live ? `<div class="live-row"><span class="live-tag">${t('yourMove')}</span><button id="live-back" title="${t('returnToGame')}">${t('backToReview')}</button></div>` : ''}
         <div class="verdict-row">
           ${badgeHtml(c)}
           <span class="verdict-label"><span class="san">${renderRich(move.san, [move.fenBefore])}</span> is <span class="verdict-class" style="color:${CLASS_COLORS[c]}">${headline(c)}</span></span>
@@ -104,7 +105,7 @@ export function renderCoach(
           // one-line re-add when that feature lands. "Quick take" (AI mode only)
           // is a separate thing and stays.
           aiComment
-            ? `<details class="coach-more"><summary>Quick take</summary>
+            ? `<details class="coach-more"><summary>${t('quickTake')}</summary>
                <div class="commentary-text">${renderRich(comment.text, [move.fenBefore, move.fenAfter])}</div></details>`
             : ''
         }

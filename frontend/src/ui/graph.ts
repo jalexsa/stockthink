@@ -4,6 +4,7 @@
  */
 import type { AnnotatedMove } from '@backend/analyze';
 import { winPercent } from '@backend/analysis/winprob';
+import { t } from '@common/i18n';
 
 const W = 600;
 const H = 110;
@@ -39,7 +40,7 @@ export function renderGraph(
       : '';
 
   el.innerHTML =
-    `<svg viewBox="0 0 ${W} ${H}" class="eval-graph" role="img" aria-label="evaluation graph">` +
+    `<svg viewBox="0 0 ${W} ${H}" class="eval-graph" role="img" aria-label="${t('graphLabel')}">` +
     `<rect width="${W}" height="${H}" fill="#1f1d1b"/>` +
     `<path d="M0,${H} L${pts.join(' L')} L${W},${H} Z" fill="#e8e6e3" opacity="0.9"/>` +
     `<line x1="0" y1="${H / 2}" x2="${W}" y2="${H / 2}" stroke="#777" stroke-width="0.6" stroke-dasharray="3 3"/>` +

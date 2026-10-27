@@ -18,8 +18,9 @@
     "baseUrl": ".",
     "paths": {
       "@frontend/*": ["frontend/src/*"],
-      "@backend/*": ["backend/src/*"]
+      "@backend/*": ["backend/src/*"],
+      "@common/*": ["common/*"]
     }
   },
-  "include": ["frontend/src", "backend/src", "self-improvement/test", "self-improvement/eval"]
+  "include": ["frontend/src", "backend/src", "common", "self-improvement/test", "self-improvement/eval"]
 }

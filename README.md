@@ -1,6 +1,7 @@
 # StockThink ♟️
 
-**Free chess game review — entirely in your browser.** Paste a PGN, get a
+**Free chess game review — entirely in your browser.** Available in English
+and Latin American Spanish, with Spanish selected by default. Paste a PGN, get a
 chess.com-style analysis: eval bar, move classifications (Brilliant‼ → Blunder⁇),
 accuracy scores, and commentary that explains **why** each move is good or bad.
 
@@ -54,6 +55,34 @@ npm test                                 # 142 tests incl. real-engine integrati
 npx vitest run self-improvement/test/gate.e2e.test.ts     # quality gate: full games, zero eval-speak
 npm run build                            # production build (Pages deploys on push)
 ```
+
+## Languages
+
+The analysis app defaults to Spanish and includes an in-app language selector
+for English. The selection is saved in local storage and takes effect without a
+reload. UI strings live in `common/locales/en.json` and `common/locales/es.json`;
+fact-based explanation phrasing is rendered in `backend/src/compose/templates.ts`.
+Chess facts, SAN, PGN, coordinates, Stockfish evaluation, and move classification
+remain language-neutral and unchanged.
+
+## Original project and licensing
+
+StockThink is based on the original project by **Malik Abuallatta**
+([malikahed/stockthink](https://github.com/malikahed/stockthink)). This
+translation retains the repository's GPL-3.0-or-later license and copyright
+notices. The Spanish interface and i18n implementation are modifications to
+that project; see `CHANGELOG.md`.
+
+The code license does not grant rights to third-party assets. The opening data
+is identified by the project as CC0 (lichess), and Stockfish is GPL. The
+repository also contains Chess.com badge artwork and landing-page 3D models and
+textures; the checked-in project does not include license grants or complete
+source/provenance records for those assets. Chess.com terms describe a limited
+personal, noncommercial content license, so attribution alone does not prove
+that redistribution under this repository's GPL terms is permitted. Those
+asset rights remain to be confirmed with their respective owners before
+claiming that every bundled asset is freely redistributable. See
+`LICENSES.md` for the inventory and findings.
 
 Stack: Vite 5 + TypeScript, chessops, chessground, Stockfish 18 Lite WASM
 (single-thread, 7.3 MB, committed in `frontend/public/engine/`). Project map in

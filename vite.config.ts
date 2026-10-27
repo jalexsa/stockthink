@@ -46,6 +46,7 @@ export default defineConfig(({ mode }) => ({
     alias: {
       '@frontend': fileURLToPath(new URL('./frontend/src', import.meta.url)),
       '@backend': fileURLToPath(new URL('./backend/src', import.meta.url)),
+      '@common': fileURLToPath(new URL('./common', import.meta.url)),
     },
   },
   // vite-plugin-checker surfaces TS errors as an in-page overlay during dev, so

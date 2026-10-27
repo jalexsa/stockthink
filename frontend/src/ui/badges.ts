@@ -3,6 +3,7 @@
  * (self-hosted in frontend/public/badges/) + matched palette + glyph fallbacks.
  */
 import type { Classification } from '@backend/analysis/classify';
+import { t } from '@common/i18n';
 
 /** URL of the official chess.com badge image for a classification. */
 export const badgeUrl = (cls: Classification): string =>
@@ -22,19 +23,10 @@ export const CLASS_COLORS: Record<Classification, string> = {
   blunder: '#ca3431',
 };
 
-export const CLASS_LABELS: Record<Classification, string> = {
-  brilliant: 'Brilliant',
-  great: 'Great move',
-  best: 'Best move',
-  excellent: 'Excellent',
-  good: 'Good',
-  book: 'Book',
-  forced: 'Forced',
-  inaccuracy: 'Inaccuracy',
-  mistake: 'Mistake',
-  miss: 'Miss',
-  blunder: 'Blunder',
-};
+export const CLASS_LABELS: Record<Classification, string> = Object.fromEntries(
+  (['brilliant','great','best','excellent','good','book','forced','inaccuracy','mistake','miss','blunder'] as Classification[])
+    .map(c => [c, t(c)]),
+) as Record<Classification, string>;
 
 /** Order classifications appear in the summary table. */
 export const CLASS_ORDER: Classification[] = [
@@ -61,4 +53,4 @@ export const badgeSvg = (cls: Classification): string =>
 
 /** Small inline HTML badge (move list, coach header, summary). */
 export const badgeHtml = (cls: Classification): string =>
-  `<img class="badge" src="${badgeUrl(cls)}" alt="${CLASS_LABELS[cls]}" draggable="false">`;
+  `<img class="badge" src="${badgeUrl(cls)}" alt="${t(cls)}" draggable="false">`;

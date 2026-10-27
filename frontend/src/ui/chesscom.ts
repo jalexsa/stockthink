@@ -5,8 +5,6 @@
  * finished review, and every row's status chip tracks it live.
  */
 import {
-  archiveLabel,
-  dateLabel,
   fetchArchives,
   fetchMonth,
   fetchPlayer,
@@ -21,6 +19,7 @@ import {
 import { analysisQueue, type QueueSnapshot } from '@backend/chesscom/queue';
 import { cachedKeys, reportKey } from '@backend/chesscom/store';
 import type { Tier } from '@backend/analyze';
+import { getLocale, t } from '@common/i18n';
 
 export interface ChesscomCallbacks {
   /** Open this game in the review flow (cache-aware — main decides how). */
@@ -47,6 +46,11 @@ const tcIcon = (timeClass: string): string =>
 const esc = (s: string): string =>
   s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
+const archiveDisplay = (url: string): string => {
+  const m = url.match(/(\d{4})\/(\d{2})$/);
+  return m ? new Intl.DateTimeFormat(getLocale() === 'es' ? 'es-419' : 'en', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(+m[1], +m[2] - 1, 1))) : url;
+};
+const dateDisplay = (seconds: number): string => new Intl.DateTimeFormat(getLocale() === 'es' ? 'es-419' : 'en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(seconds * 1000));
 
 /* ------------------------------------------------------------ state --- */
 let host: HTMLElement;
@@ -71,6 +75,9 @@ export function initChesscomTab(el: HTMLElement, cbs: ChesscomCallbacks): void {
   analysisQueue.subscribe(onQueue);
   render();
 }
+
+/** Rebuild visible copy after a language change without subscribing twice. */
+export function refreshChesscomLanguage(): void { if (host) render(); }
 
 /** Re-read the report cache (after a job lands or the tier changes). */
 export async function refreshCached(): Promise<void> {
@@ -150,15 +157,15 @@ function render(): void {
     <form id="cc-form" class="cc-search">
       <div class="cc-search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg>
-        <input id="cc-user" type="text" placeholder="chess.com username" autocomplete="off"
+        <input id="cc-user" type="text" placeholder="${t('chesscomUsername')}" autocomplete="off"
                spellcheck="false" value="${esc(lastSearch)}" ${busy === 'player' ? 'disabled' : ''}>
       </div>
       <button type="submit" class="primary" ${busy === 'player' ? 'disabled' : ''}>
-        ${busy === 'player' ? 'Finding…' : 'Find games'}
+        ${busy === 'player' ? t('searching') : t('findGames')}
       </button>
     </form>
     ${error ? `<p class="error">${esc(error)}</p>` : ''}
-    ${player ? playerCardHtml() : busy !== 'player' && !error ? `<p class="hint cc-blurb">Look up any account and review its games — yours, a rival's, or a streamer's. Pick several and pre-analyze them in the background while you read the first review.</p>` : ''}
+    ${player ? playerCardHtml() : busy !== 'player' && !error ? `<p class="hint cc-blurb">${t('ccBlurb')}</p>` : ''}
     ${player ? gamesHtml() : ''}`;
 
   $('#cc-form')?.addEventListener('submit', e => {
@@ -219,7 +226,7 @@ function playerCardHtml(): string {
           ${p.title ? `<span class="cc-title">${esc(p.title)}</span>` : ''}
           <span>${esc(p.username)}</span>
           ${p.name ? `<span class="cc-realname">${esc(p.name)}</span>` : ''}
-          <a class="cc-profile" href="${esc(p.url)}" target="_blank" rel="noopener" title="Open chess.com profile">
+          <a class="cc-profile" href="${esc(p.url)}" target="_blank" rel="noopener" title="${t('openProfile')}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M19 13v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h6"/></svg>
           </a>
         </div>
@@ -232,28 +239,28 @@ function playerCardHtml(): string {
 
 function gamesHtml(): string {
   if (!archives.length)
-    return `<p class="hint">This account hasn't played any games yet.</p>`;
+    return `<p class="hint">${t('accountNoGames')}</p>`;
   const options = archives
-    .map(a => `<option value="${esc(a)}" ${a === monthUrl ? 'selected' : ''}>${esc(archiveLabel(a))}</option>`)
+    .map(a => `<option value="${esc(a)}" ${a === monthUrl ? 'selected' : ''}>${esc(archiveDisplay(a))}</option>`)
     .join('');
   const list =
     busy === 'games'
-      ? `<p class="hint cc-loading">Loading games…</p>`
+      ? `<p class="hint cc-loading">${t('loadingGames')}</p>`
       : games.length
         ? `<div class="cc-list">${games.slice(0, shown).map(rowHtml).join('')}</div>
-           ${games.length > shown ? `<button id="cc-more" class="cc-more">Show ${Math.min(PAGE, games.length - shown)} more of ${games.length - shown}</button>` : ''}`
-        : `<p class="hint">No standard games this month.</p>`;
+           ${games.length > shown ? `<button id="cc-more" class="cc-more">${t('showMore', { count: Math.min(PAGE, games.length - shown), total: games.length - shown })}</button>` : ''}`
+        : `<p class="hint">${t('noStandardGames')}</p>`;
   return `
     <div class="cc-toolbar">
       <select id="cc-month">${options}</select>
       <span class="cc-count">${busy === 'games' ? '' : `${games.length} games${hidden ? ` · ${hidden} variant games hidden` : ''}`}</span>
-      <span class="cc-select-links">Select <button type="button" id="cc-sel-page">shown</button> · <button type="button" id="cc-sel-none">none</button></span>
+      <span class="cc-select-links">${t('select')} <button type="button" id="cc-sel-page">${t('shown')}</button> · <button type="button" id="cc-sel-none">${t('none')}</button></span>
     </div>
     ${list}
     <div id="cc-selbar" class="cc-selbar hidden">
       <span id="cc-sel-count"></span>
       <button id="cc-analyze-sel" class="primary"></button>
-      <span class="cc-selbar-hint">runs in the background — open any game while the rest finish</span>
+      <span class="cc-selbar-hint">${t('backgroundQueue')}</span>
     </div>`;
 }
 
@@ -265,12 +272,12 @@ function rowHtml(g: CcGame): string {
     `<span class="cc-dot ${s}"></span><span class="cc-name ${s === side ? 'me' : ''}">${esc(g[s].username)}</span><span class="cc-elo">(${g[s].rating})</span>`;
   const acc = g.accuracies?.[side];
   return `
-    <div class="cc-row" data-uuid="${esc(g.uuid)}" title="Open game review">
+    <div class="cc-row" data-uuid="${esc(g.uuid)}" title="${t('openReview')}">
       <label class="cc-check"><input type="checkbox" ${selected.has(g.uuid) ? 'checked' : ''}><span></span></label>
       ${tcIcon(g.timeClass)}
       <div class="cc-game">
         <div class="cc-players">${playerSpan('white')}<span class="cc-vs">vs</span>${playerSpan('black')}</div>
-        <div class="cc-meta">${dateLabel(g.endTime)} · ${g.moveCount} moves · ${resultLabel(g)}${g.rated ? '' : ' · unrated'}${acc !== undefined ? ` · ${acc.toFixed(0)}% acc` : ''}</div>
+      <div class="cc-meta">${dateDisplay(g.endTime)} · ${g.moveCount} ${t('moves')} · ${resultLabel(g)}${g.rated ? '' : ` · ${t('unrated')}`}${acc !== undefined ? ` · ${acc.toFixed(0)}% ${t('accuracyAbbr')}` : ''}</div>
       </div>
       <span class="cc-res ${outcome}">${outcome === 'win' ? '+' : outcome === 'loss' ? '−' : '='}</span>
       <span class="cc-status"></span>
@@ -289,14 +296,14 @@ function updateStatuses(): void {
     const state = snap.states.get(uuid);
     let chip = '';
     if (isCached(uuid)) {
-      chip = `<span class="chip done" title="Opens instantly">✓ Analyzed</span>`;
+      chip = `<span class="chip done" title="${t('opensInstantly')}">✓ ${t('analyzed')}</span>`;
     } else if (state === 'analyzing' && snap.active?.id === uuid) {
       const pct = snap.active.total ? Math.round((snap.active.done / snap.active.total) * 100) : 0;
       chip = `<span class="chip busy"><span class="cc-spin"></span>${pct}%</span>`;
     } else if (state === 'queued') {
-      chip = `<span class="chip queued">Queued</span>`;
+      chip = `<span class="chip queued">${t('queued')}</span>`;
     } else if (state === 'failed') {
-      chip = `<span class="chip failed" title="${esc(snap.failures.get(uuid) ?? '')}">Failed</span>`;
+      chip = `<span class="chip failed" title="${esc(snap.failures.get(uuid) ?? '')}">${t('failed')}</span>`;
     }
     status.innerHTML = chip;
     const settled = isCached(uuid) || state === 'queued' || state === 'analyzing';
@@ -313,9 +320,11 @@ function updateStatuses(): void {
     const n = selected.size;
     const count = $('#cc-sel-count');
     const btn = $('#cc-analyze-sel');
-    if (count) count.textContent = `${n} game${n === 1 ? '' : 's'} selected`;
-    if (btn)
-      btn.textContent = `Pre-analyze ${n === 1 ? 'it' : `all ${n}`} · ${cap(callbacks.getTier())}`;
+    if (count) count.textContent = t(n === 1 ? 'selectedGame' : 'selectedGames', { count: n });
+    if (btn) {
+      const tierLabel = t(callbacks.getTier() === 'fast' ? 'tierFast' : callbacks.getTier() === 'deep' ? 'tierDeep' : 'tierStandard');
+      btn.textContent = `${n === 1 ? t('preAnalyzeOne') : t('preAnalyze', { count: n })} · ${tierLabel}`;
+    }
   }
 }
 

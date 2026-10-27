@@ -22,6 +22,15 @@ PGN text
 
 ## Modules
 
+### Internationalization
+| File | What it does |
+|---|---|
+| `common/i18n.ts` | Shared language state, resource lookup, local persistence and static DOM translation helpers; browser app initializes Spanish by default while library tests retain English fallback |
+| `common/locales/en.json`, `common/locales/es.json` | Separate English and Latin American Spanish UI resources |
+| `backend/src/compose/templates.ts` | Locale-specific prose renderers from the same typed chess facts |
+| `frontend/src/main.ts` | Language selector, immediate rerender and local preference |
+| `self-improvement/test/i18n.test.ts` | Classification and dynamic explanation parity checks |
+
 ### Core analysis
 | File | What it does | Key exports |
 |---|---|---|

@@ -11,6 +11,7 @@
 import type { MoveReport } from '../analysis/report';
 import type { Fact } from '../concepts/facts';
 import { renderFact } from './templates';
+import { getLocale } from '@common/i18n';
 
 export interface VariationChip {
   label: string;
@@ -83,6 +84,11 @@ const NEUTRAL: Partial<Record<MoveReport['classification'], string[]>> = {
     'This keeps the game on course.',
   ],
 };
+const NEUTRAL_ES: Partial<Record<MoveReport['classification'], string[]>> = {
+  best: ['La continuación más precisa.', 'Exactamente la jugada correcta.', 'La jugada más fuerte de la posición.', 'Una jugada precisa que mantiene todo bajo control.', 'La mejor jugada, sin duda.', 'Justo a tiempo.'],
+  excellent: ['Una elección sólida.', 'Una de las mejores jugadas de la posición.', 'Muy buen juego.', 'Una decisión excelente.', 'Es difícil mejorar esta jugada.', 'Una buena jugada.'],
+  good: ['Una continuación razonable.', 'Una jugada sensata.', 'Una opción perfectamente jugable.', 'No hay nada malo en esta jugada.', 'Una decisión práctica y sólida.', 'La partida sigue su curso.'],
+};
 
 /** The concrete engine-verified reply a bad move failed against (GM-4 gate). */
 const concreteReply = (facts: Fact[]): string | null => {
@@ -105,11 +111,12 @@ const asClause = (s: string): string => {
 };
 
 export function composeComment(m: MoveReport): Comment {
+  const es = getLocale() === 'es';
   const facts = m.facts;
   const chips = buildChips(m);
 
   if (m.classification === 'book')
-    return { text: m.openingName ? `Book: ${m.openingName}.` : 'A known book move.', more: null, chips: [] };
+    return { text: m.openingName ? (es ? `De libro: ${m.openingName}.` : `Book: ${m.openingName}.`) : (es ? 'Jugada conocida de teoría.' : 'A known book move.'), more: null, chips: [] };
 
   const sentence = (f: Fact | undefined): string | null => (f ? renderFact(f) : null);
 
@@ -129,7 +136,7 @@ export function composeComment(m: MoveReport): Comment {
     m.classification === 'miss';
 
   if (m.classification === 'forced') {
-    parts.push('The only legal move.');
+    parts.push(es ? 'La única jugada legal.' : 'The only legal move.');
   } else if (isBadMove) {
     // R5: cause → consequence first
     const cause = badFacts.find(f => f.kind !== 'regression') ?? badFacts[0];
@@ -140,20 +147,20 @@ export function composeComment(m: MoveReport): Comment {
     // GM-5 (book §4.2, Lasker): a miss is not a bad move — it let a better
     // one go. Frame it that way before naming what was on the table.
     if (m.classification === 'miss' && !cause)
-      parts.push('A decent move on its own — but the position offered more.');
+      parts.push(es ? 'La jugada no es mala por sí sola, pero la posición ofrecía algo mejor.' : 'A decent move on its own — but the position offered more.');
     // then what was better, and WHY (the best move's own facts)
     const better = missedFacts[0];
     if (better) {
       parts.push(sentence(better)!);
       used.push(better);
     } else if (m.bestSan && !m.wasBest) {
-      parts.push(`${m.bestSan} was the better way.`);
+      parts.push(es ? `${m.bestSan} era mejor.` : `${m.bestSan} was the better way.`);
     }
     // a bad move with no concrete facts at all: name the better move, say no more (R3)
-    if (parts.length === 0 && m.bestSan) parts.push(`${m.bestSan} was stronger here.`);
+    if (parts.length === 0 && m.bestSan) parts.push(es ? `${m.bestSan} era más fuerte aquí.` : `${m.bestSan} was stronger here.`);
     // GM-1: the move sat on the engine's own shortlist — soften the verdict
     if (facts.some(f => f.kind === 'second_candidate'))
-      parts.push('A natural candidate, but it falls just short.');
+      parts.push(es ? 'Era una candidata natural, pero se queda corta.' : 'A natural candidate, but it falls just short.');
     // GM-2: the miss was a quiet tactical move — the hardest kind to spot
     const htf = facts.find(f => f.kind === 'hard_to_find');
     if (htf) {
@@ -189,7 +196,7 @@ export function composeComment(m: MoveReport): Comment {
         parts.push(sentence(sc)!);
         used.push(sc);
       } else {
-        const pool = NEUTRAL[m.classification];
+        const pool = (es ? NEUTRAL_ES : NEUTRAL)[m.classification];
         if (pool) parts.push(pool[Math.floor(m.ply / 2) % pool.length]);
       }
     }
@@ -210,14 +217,14 @@ export function composeComment(m: MoveReport): Comment {
       .filter((s): s is string => s !== null)
       .map(asClause);
     if (intent.length)
-      rest.push(`The idea — ${intent.join('; ')} — doesn't make up for what this concedes.`);
+      rest.push(es ? `La idea — ${intent.join('; ')} — no compensa lo que se concede.` : `The idea — ${intent.join('; ')} — doesn't make up for what this concedes.`);
     // GM-4 (book §4.2, falsify before committing): on a real mistake whose
     // move HAD an idea, coach the habit by naming the concrete test it failed.
     const serious = m.classification === 'mistake' || m.classification === 'blunder';
     const reply = serious && facts.some(isPurpose) ? concreteReply(facts) : null;
     if (reply)
       rest.push(
-        `The test this move had to pass was ${reply} — strong players spend most of their time looking for exactly this kind of answer before committing.`,
+        es ? `Antes de jugar, había que comprobar si el rival podía responder ${reply}; los jugadores fuertes siempre buscan este tipo de respuesta.` : `The test this move had to pass was ${reply} — strong players spend most of their time looking for exactly this kind of answer before committing.`,
       );
   } else {
     rest = remaining
@@ -225,7 +232,7 @@ export function composeComment(m: MoveReport): Comment {
         // a mate allowed by a GOOD move means the game was already beyond
         // saving — frame it so the best try doesn't read like a blunder (P3)
         f.kind === 'allows_mate'
-          ? `The game could not be saved either way — ${asClause(renderFact(f)!)}.`
+          ? es ? `La posición ya no tenía salvación: ${asClause(renderFact(f)!)}.` : `The game could not be saved either way — ${asClause(renderFact(f)!)}.`
           : renderFact(f),
       )
       .filter((s): s is string => s !== null && !parts.includes(s));
@@ -242,7 +249,7 @@ function buildChips(m: MoveReport): VariationChip[] {
   const chips: VariationChip[] = [];
   if (!m.wasBest && m.bestSan && m.lines[0]?.sanPv.length)
     chips.push({
-      label: `Best: ${m.bestSan}`,
+      label: `${getLocale() === 'es' ? 'Mejor' : 'Best'}: ${m.bestSan}`,
       kind: 'best',
       eval: m.lines[0].eval,
       sanPv: m.lines[0].sanPv,
@@ -252,7 +259,7 @@ function buildChips(m: MoveReport): VariationChip[] {
   const refutation = m.facts.find(f => f.kind === 'refutation');
   if (refutation && refutation.kind === 'refutation')
     chips.push({
-      label: `Why it fails: ${refutation.moves[0].san}`,
+      label: `${getLocale() === 'es' ? 'Por qué falla' : 'Why it fails'}: ${refutation.moves[0].san}`,
       kind: 'refutation',
       eval: m.evalAfter,
       sanPv: refutation.moves.map(x => x.san),

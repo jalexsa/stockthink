@@ -11,6 +11,14 @@ into the new version section as you go.
 
 ## [Unreleased]
 
+### Added
+- Bilingual English/Latin American Spanish interface for the analysis app, with
+  Spanish as the default, a persistent in-app language selector, localized
+  classifications and verified fact-based explanations. The chess-analysis
+  facts, classification math, engine, SAN, PGN, and move variants are unchanged.
+- Translation resources under `common/locales/` and bilingual presentation
+  tests in `self-improvement/test/i18n.test.ts`.
+
 ### Changed
 - Reorganized the repo into three top-level zones — `frontend/` (UI/UX),
   `backend/` (engine + analysis logic), `self-improvement/` (docs, improve,

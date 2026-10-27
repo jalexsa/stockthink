@@ -22,6 +22,7 @@ import type { MoveReport } from '@backend/analysis/report';
 import { badgeUrl, CLASS_COLORS } from './badges';
 import { formatEval, headline } from './coach';
 import { renderRich } from './santag';
+import { getLocale, t } from '@common/i18n';
 
 /** Plies we explain with confidence (3 full moves). */
 export const CONFIDENT_PLIES = 6;
@@ -51,6 +52,9 @@ const ROLE_NAME: Record<Role, string> = {
   queen: 'queen',
   king: 'king',
 };
+const roleName = (r: Role): string => getLocale() === 'es'
+  ? ({ pawn: 'peón', knight: 'caballo', bishop: 'alfil', rook: 'torre', queen: 'dama', king: 'rey' } as Record<Role, string>)[r]
+  : ROLE_NAME[r];
 
 const SQUARE = (sq: number): string =>
   'abcdefgh'[sq & 7] + String((sq >> 3) + 1);
@@ -131,20 +135,19 @@ export function lineOutcome(
 
 /** Outcome → the WHY clause for the intro caption. */
 const outcomeClause = (o: LineOutcome): string =>
-  o.kind === 'mate'
+  getLocale() === 'es'
+    ? o.kind === 'mate'
+      ? o.mateIn === 1 ? 'fuerza mate de inmediato' : 'fuerza mate'
+      : `gana un ${roleName(o.pieceWon ?? 'knight')}`
+    : o.kind === 'mate'
     ? o.mateIn === 1
       ? 'it forces checkmate on the spot'
       : 'it forces checkmate'
     : `it wins ${o.pieceWon === 'pawn' ? 'a pawn' : `a ${ROLE_NAME[o.pieceWon ?? 'knight']}`}`;
 
 /** Friendly lead-ins so consecutive steps don't read like a metronome. */
-const YOUR_LEADS = ['You play', 'Now', 'Then comes', 'And now'];
-const OPP_LEADS = [
-  'The expected reply is',
-  'Your opponent would likely answer',
-  'The best defense is',
-  'The opponent tries',
-];
+const YOUR_LEADS = (): string[] => t('yourLeads').split('|');
+const OPP_LEADS = (): string[] => t('opponentLeads').split('|');
 
 /**
  * The strongest tactical consequence of a move, provable on the board after
@@ -155,23 +158,23 @@ function whyClause(before: Chess, move: NormalMove): string | null {
   const afterPos = before.clone();
   afterPos.play(move);
   const board = afterPos.board;
-  const role = (sq: number): string => ROLE_NAME[board.get(sq)?.role ?? 'pawn'];
+  const role = (sq: number): string => roleName(board.get(sq)?.role ?? 'pawn');
 
-  if (createsMateThreat(before, move)) return 'threatening checkmate next move';
+  if (createsMateThreat(before, move)) return getLocale() === 'es' ? 'amenazando mate en la siguiente jugada' : 'threatening checkmate next move';
   const fork = createsFork(before, move);
-  if (fork.length >= 2) return `forking the ${role(fork[0])} and the ${role(fork[1])}`;
+  if (fork.length >= 2) return getLocale() === 'es' ? `haciendo un tenedor contra el ${role(fork[0])} y el ${role(fork[1])}` : `forking the ${role(fork[0])} and the ${role(fork[1])}`;
   // a pinned PAWN is rarely the story — only narrate piece pins (W3)
   const pins = pinsCreatedEx(before, move).filter(p => board.get(p.pinned)?.role !== 'pawn');
   if (pins.length) {
     const p = pins[0];
     return p.absolute
-      ? `pinning the ${role(p.pinned)} to the king`
-      : `pinning the ${role(p.pinned)} against the ${role(p.against)}`;
+      ? getLocale() === 'es' ? `clavando al ${role(p.pinned)} contra el rey` : `pinning the ${role(p.pinned)} to the king`
+      : getLocale() === 'es' ? `clavando al ${role(p.pinned)} contra el ${role(p.against)}` : `pinning the ${role(p.pinned)} against the ${role(p.against)}`;
   }
   const trapped = trapsPieces(before, move);
-  if (trapped.length) return `trapping the ${role(trapped[0])} — it has no safe square`;
+  if (trapped.length) return getLocale() === 'es' ? `atrapando al ${role(trapped[0])}: no tiene casillas seguras` : `trapping the ${role(trapped[0])} — it has no safe square`;
   const tempo = winsTempo(before, move);
-  if (tempo !== null) return `attacking the ${role(tempo)}`;
+  if (tempo !== null) return getLocale() === 'es' ? `atacando al ${role(tempo)}` : `attacking the ${role(tempo)}`;
   return null;
 }
 
@@ -194,6 +197,23 @@ const POS_RANK: Record<PositionalFact['kind'], number> = {
 
 /** A board-verified positional purpose as a present-participle clause. */
 function positionalWhy(f: PositionalFact): string {
+  if (getLocale() === 'es') {
+    switch (f.kind) {
+      case 'castles': return f.side === 'king' ? 'enrocando corto para proteger al rey y conectar las torres' : 'enrocando largo para poner al rey a salvo y activar la torre';
+      case 'passed_pawn': return `creando un peón pasado en ${f.square} que ningún peón rival puede detener`;
+      case 'simplifies_ahead': return 'simplificando la posición con ventaja material';
+      case 'releases_pin': return `liberando de la clavada al ${roleName(f.role)}`;
+      case 'rook_open_file': return `ocupando la columna abierta ${'abcdefgh'[f.file]}`;
+      case 'rook_seventh': return `llevando la torre a la séptima fila, en ${f.square}`;
+      case 'knight_outpost': return `instalando el caballo en el puesto avanzado de ${f.square}`;
+      case 'file_battery': return `duplicando las piezas pesadas en la columna ${'abcdefgh'[f.file]}`;
+      case 'fianchetto': return 'fianchetando el alfil en la gran diagonal';
+      case 'develops': return `desarrollando el ${roleName(f.role)} desde ${f.square}`;
+      case 'improves_shield': return 'reforzando los peones que protegen al rey';
+      case 'center_gain': return 'fortaleciendo el control del centro';
+      case 'mobility_gain': return `dándole más actividad al ${roleName(f.role)}`;
+    }
+  }
   switch (f.kind) {
     case 'castles':
       return f.side === 'king'
@@ -252,10 +272,10 @@ function reasonClauses(before: Chess, move: NormalMove, punish: boolean): string
   const isEp = piece?.role === 'pawn' && (move.from & 7) !== (move.to & 7) && !victim;
 
   if (victim) {
-    const target = `the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)}`;
-    clauses.push(punish && seeCapture(before, move) >= 0 ? `winning ${target}` : `taking ${target}`);
+    const target = getLocale() === 'es' ? `${roleName(victim.role)} de ${SQUARE(move.to)}` : `the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)}`;
+    clauses.push(getLocale() === 'es' ? (punish && seeCapture(before, move) >= 0 ? `ganando el ${target}` : `capturando el ${target}`) : punish && seeCapture(before, move) >= 0 ? `winning ${target}` : `taking ${target}`);
   } else if (isEp) {
-    clauses.push('capturing en passant');
+    clauses.push(getLocale() === 'es' ? 'capturando al paso' : 'capturing en passant');
   }
 
   // strongest tactical sting the move creates (mate threat > fork > pin > trap > tempo)
@@ -286,9 +306,8 @@ function describeMove(
   moveIdx: number,
   mode: 'good' | 'defense' | 'punish',
 ): string {
-  const lead = yours
-    ? YOUR_LEADS[Math.floor(moveIdx / 2) % YOUR_LEADS.length]
-    : OPP_LEADS[Math.floor(moveIdx / 2) % OPP_LEADS.length];
+  const leads = yours ? YOUR_LEADS() : OPP_LEADS();
+  const lead = leads[Math.floor(moveIdx / 2) % leads.length];
 
   const piece = pos.board.get(move.from);
   const victim = pos.board.get(move.to);
@@ -298,22 +317,22 @@ function describeMove(
   const check = !mate && after.isCheck();
 
   if (mate) {
-    const cap = victim ? `taking the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)} and delivering ` : '';
-    return `${lead} ${san} — ${cap}checkmate, the game would end right here!`;
+    const cap = victim ? (getLocale() === 'es' ? `capturando el ${roleName(victim.role)} de ${SQUARE(move.to)} y dando ` : `taking the ${ROLE_NAME[victim.role]} on ${SQUARE(move.to)} and delivering `) : '';
+    return getLocale() === 'es' ? `${lead} ${san}: ${cap}jaque mate; la partida termina aquí.` : `${lead} ${san} — ${cap}checkmate, the game would end right here!`;
   }
 
   let clauses: string[];
   if (san.startsWith('O-O-O'))
-    clauses = ['castling long, bringing the king to safety and the rook into play'];
-  else if (san.startsWith('O-O')) clauses = ['castling — the king tucks away and the rooks connect'];
-  else if (move.promotion) clauses = [`promoting to a ${ROLE_NAME[move.promotion]}`];
+    clauses = [getLocale() === 'es' ? 'enrocando largo para poner al rey a salvo y activar la torre' : 'castling long, bringing the king to safety and the rook into play'];
+  else if (san.startsWith('O-O')) clauses = [t('castlingLine')];
+  else if (move.promotion) clauses = [getLocale() === 'es' ? `coronando y convirtiéndose en ${roleName(move.promotion)}` : `promoting to a ${ROLE_NAME[move.promotion]}`];
   else clauses = reasonClauses(pos, move, mode === 'punish');
 
   // honest fallback: no verified purpose found — name the move, claim nothing
-  if (!clauses.length) clauses = [`bringing the ${ROLE_NAME[piece?.role ?? 'pawn']} to ${SQUARE(move.to)}`];
+  if (!clauses.length) clauses = [getLocale() === 'es' ? `llevando el ${roleName(piece?.role ?? 'pawn')} a ${SQUARE(move.to)}` : `bringing the ${ROLE_NAME[piece?.role ?? 'pawn']} to ${SQUARE(move.to)}`];
 
-  const body = clauses.join(' and ');
-  return check ? `${lead} ${san} — ${body}, with check.` : `${lead} ${san} — ${body}.`;
+  const body = clauses.join(getLocale() === 'es' ? ' y ' : ' and ');
+  return getLocale() === 'es' ? (check ? `${lead} ${san}: ${body}, con jaque.` : `${lead} ${san}: ${body}.`) : check ? `${lead} ${san} — ${body}, with check.` : `${lead} ${san} — ${body}.`;
 }
 
 /**
@@ -350,20 +369,20 @@ export function buildWalkthrough(
   let intro: string;
   if (chip.kind === 'best') {
     const opener = playedWasFine
-      ? `${playedSan ?? 'Your move'} was a fine choice — the engine just liked ${firstSan} a touch more`
+      ? t('engineLiked', { move: playedSan ?? (getLocale() === 'es' ? 'Tu jugada' : 'Your move'), best: firstSan })
       : playedSan
-        ? `Instead of ${playedSan}, this was the moment for ${firstSan}`
-        : `The strongest idea here was ${firstSan}`;
+        ? getLocale() === 'es' ? `En vez de ${playedSan}, aquí era el momento de jugar ${firstSan}` : `Instead of ${playedSan}, this was the moment for ${firstSan}`
+        : getLocale() === 'es' ? `La idea más fuerte aquí era ${firstSan}` : `The strongest idea here was ${firstSan}`;
     intro = outcome
-      ? `${opener} — ${outcomeClause(outcome)}. Step through to see how.`
-      : `${opener}. Step through it at your own pace.`;
+      ? getLocale() === 'es' ? `${opener}: ${outcomeClause(outcome)}. Avanza para ver cómo.` : `${opener} — ${outcomeClause(outcome)}. Step through to see how.`
+      : getLocale() === 'es' ? `${opener}. Recorre la variante a tu ritmo.` : `${opener}. Step through it at your own pace.`;
   } else {
     const punish = outcome
       ? outcome.kind === 'mate'
-        ? `${firstSan} leads to checkmate`
-        : `${firstSan} wins your ${outcome.pieceWon === 'pawn' ? 'pawn' : ROLE_NAME[outcome.pieceWon ?? 'knight']}`
-      : `the reply ${firstSan} punishes it`;
-    intro = `So what was wrong with ${playedSan ?? 'that move'}? Watch — ${punish}.`;
+        ? getLocale() === 'es' ? `${firstSan} lleva a jaque mate` : `${firstSan} leads to checkmate`
+        : getLocale() === 'es' ? `${firstSan} gana tu ${roleName(outcome.pieceWon ?? 'knight')}` : `${firstSan} wins your ${outcome.pieceWon === 'pawn' ? 'pawn' : ROLE_NAME[outcome.pieceWon ?? 'knight']}`
+      : getLocale() === 'es' ? `la respuesta ${firstSan} lo refuta` : `the reply ${firstSan} punishes it`;
+    intro = getLocale() === 'es' ? `¿Qué tenía de malo ${playedSan ?? 'esa jugada'}? Mira: ${punish}.` : `So what was wrong with ${playedSan ?? 'that move'}? Watch — ${punish}.`;
   }
 
   steps.push({
@@ -392,7 +411,7 @@ export function buildWalkthrough(
     const confident = i < CONFIDENT_PLIES;
     const caption = confident
       ? describeMove(pos, move, san, yours, i, mode)
-      : `The engine continues with ${san}.`;
+      : getLocale() === 'es' ? `El motor continúa con ${san}.` : `The engine continues with ${san}.`;
     pos.play(move);
     steps.push({
       fen: makeFen(pos.toSetup()),
@@ -406,7 +425,7 @@ export function buildWalkthrough(
       // the honesty note shows once, on the first beyond-our-depth step (W3)
       note:
         i === CONFIDENT_PLIES
-          ? 'We keep explanations to 3 moves for now — deeper, well-explained lines are coming as the coach learns more.'
+          ? t('walkthroughLimit')
           : undefined,
       side: yours ? 'you' : 'opponent',
     });
@@ -437,24 +456,24 @@ export function renderSpotlightCard(
   const dots = steps
     .map(
       (_, d) =>
-        `<button class="spot-dot${d === i ? ' active' : d < i ? ' done' : ''}" data-dot="${d}" aria-label="step ${d + 1}"></button>`,
+      `<button class="spot-dot${d === i ? ' active' : d < i ? ' done' : ''}" data-dot="${d}" aria-label="${t('stepLabel', { step: d + 1 })}"></button>`,
     )
     .join('');
   el.innerHTML = `
     <div class="spotlight-card ${kind}">
       <div class="spot-head">
-        <span class="spot-tag">${kind === 'best' ? '✨ Best move' : '🔍 Why it fails'}</span>
-        <button class="spot-exit" title="Back to the game (Esc)">✕</button>
+        <span class="spot-tag">${kind === 'best' ? `✨ ${t('best')}` : `🔍 ${t('seeWhyFails')}`}</span>
+        <button class="spot-exit" title="${t('spotBack')}">✕</button>
       </div>
       <div class="spot-title">${renderRich(title, [steps[0].fen])}</div>
       <div class="spot-caption ${step.side}">${renderRich(step.caption, [i > 0 ? steps[i - 1].fen : steps[0].fen, step.fen])}</div>
       ${step.note ? `<div class="spot-note">${esc(step.note)}</div>` : ''}
       <div class="spot-dots">${dots}</div>
       <div class="spot-controls">
-        <button class="spot-btn" data-nav="prev" ${i === 0 ? 'disabled' : ''}>◀ Back</button>
-        <button class="spot-btn primary" data-nav="next">${last ? '✓ Got it' : 'Next ▶'}</button>
+        <button class="spot-btn" data-nav="prev" ${i === 0 ? 'disabled' : ''}>◀ ${t('backToReview')}</button>
+        <button class="spot-btn primary" data-nav="next">${last ? t('gotIt') : t('next')}</button>
       </div>
-      <div class="spot-hint">← → to step · Esc to return · or just move a piece to try your own idea</div>
+      <div class="spot-hint">${t('spotHint')}</div>
     </div>`;
   el.querySelector('.spot-exit')?.addEventListener('click', on.exit);
   el.querySelectorAll<HTMLButtonElement>('.spot-dot').forEach(b =>
@@ -486,18 +505,18 @@ export function renderTryCard(
       </div>
       <div class="spot-caption you">${renderRich(composeComment(m).text, [m.fenBefore, m.fenAfter])}</div>`
     : `
-      <div class="spot-caption intro">Checking ${esc(san)}…</div>`;
+      <div class="spot-caption intro">${t('checkingSan', { san: esc(san) })}</div>`;
   el.innerHTML = `
     <div class="spotlight-card trymode">
       <div class="spot-head">
-        <span class="spot-tag try">🧪 Your move</span>
+        <span class="spot-tag try">🧪 ${t('yourMove')}</span>
       </div>
       ${body}
       <div class="spot-controls">
-        <button class="spot-btn" data-nav="undo" ${m ? '' : 'disabled'}>◀ Undo</button>
-        <button class="spot-btn primary" data-nav="back">↩ Back to the best line</button>
+        <button class="spot-btn" data-nav="undo" ${m ? '' : 'disabled'}>◀ ${t('undo')}</button>
+        <button class="spot-btn primary" data-nav="back">↩ ${t('backToBestLine')}</button>
       </div>
-      <div class="spot-hint">keep moving pieces — every move gets rated</div>
+      <div class="spot-hint">${t('keepMoving')}</div>
     </div>`;
   el.querySelector('[data-nav="undo"]')?.addEventListener('click', on.undo);
   el.querySelector('[data-nav="back"]')?.addEventListener('click', on.back);

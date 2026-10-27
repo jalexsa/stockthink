@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -24,7 +24,7 @@
   <body>
     <div id="app">
       <header class="topbar">
-        <button class="wordmark" id="nav-brand" title="Home">
+        <button class="wordmark" id="nav-brand" title="Inicio" data-i18n-attr="title:home">
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 32 32" fill="currentColor"><circle cx="16" cy="9.5" r="4.6"/><path d="M16 12.5l4.4 10.7H11.6z"/><rect x="9.5" y="23.2" width="13" height="3.8" rx="1.9"/></svg>
           </span>
@@ -33,25 +33,26 @@
         <nav class="topnav">
           <button id="nav-home" class="nav-link active">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.2 12 4l9 7.2"/><path d="M5.5 9.8V20h13V9.8"/></svg>
-            Home
+            <span data-i18n="home">Inicio</span>
           </button>
           <button id="nav-input" class="nav-link">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></svg>
-            Game Review
+            <span data-i18n="gameReview">Análisis de partida</span>
           </button>
           <button id="nav-review" class="nav-link hidden">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 12h16M12 4v16"/></svg>
-            Current Game
+            <span data-i18n="currentGame">Partida actual</span>
           </button>
         </nav>
         <span id="queue-pill" class="queue-pill hidden"></span>
+        <label class="language-picker"><span data-i18n="language">Idioma</span><select id="language-select" aria-label="Language"><option value="es">Español</option><option value="en">English</option></select></label>
       </header>
 
       <section id="screen-home" class="screen">
         <div class="home-hero">
           <div id="home-board" class="loader-board home-board" aria-hidden="true"></div>
-          <h1 class="home-title">Every move, <span class="title-accent">explained</span>.</h1>
-          <p class="home-sub">
+          <h1 class="home-title"><span data-i18n="heroTitleLead">Cada jugada,</span> <span class="title-accent" data-i18n="heroTitleAccent">explicada</span>.</h1>
+          <p class="home-sub" data-i18n="heroDescription">
             A full chess.com-style Game Review — accuracy, brilliancies, blunders and the
             coaching behind them. Powered by Stockfish 18 running entirely in your browser.
             Free, no account, no server.
@@ -64,54 +65,54 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4h7l4 4v12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/><path d="M16 4v4h4M5 8H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h10"/><path d="M11.5 12h5M11.5 15.5h5"/></svg>
             </span>
             <span class="home-card-body">
-              <span class="home-card-title">Paste a PGN</span>
-              <span class="home-card-text">Any game export — chess.com, lichess, or hand-typed moves — reviewed move by move.</span>
+              <span class="home-card-title" data-i18n="pastePgn">Pegar un PGN</span>
+              <span class="home-card-text" data-i18n="pastePgnDescription">Analiza cualquier partida jugada a jugada.</span>
             </span>
-            <span class="home-go">Start →</span>
+            <span class="home-go" data-i18n="start">Comenzar →</span>
           </button>
           <button class="home-card" id="home-cc">
             <span class="home-card-icon green">
               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a4 4 0 0 1 4 4c0 1.6-.95 3-2.3 3.6l.8 2.4h-5l.8-2.4A4 4 0 0 1 8 6a4 4 0 0 1 4-4zM8.5 13h7l1.3 5H7.2l1.3-5zM5.5 19.5h13a1 1 0 0 1 1 1V22h-15v-1.5a1 1 0 0 1 1-1z"/></svg>
             </span>
             <span class="home-card-body">
-              <span class="home-card-title">Import from Chess.com</span>
-              <span class="home-card-text">Search any player, browse their history, and pre-analyze whole batches in the background.</span>
+              <span class="home-card-title" data-i18n="importChesscom">Importar de Chess.com</span>
+              <span class="home-card-text" data-i18n="importDescription">Busca jugadores y analiza sus partidas.</span>
             </span>
-            <span class="home-go">Search →</span>
+            <span class="home-go" data-i18n="search">Buscar →</span>
           </button>
         </div>
         <div class="home-feats">
-          <span class="home-feat">100% in your browser</span>
-          <span class="home-feat">Move-by-move coaching</span>
-          <span class="home-feat">Brilliant &amp; blunder badges</span>
-          <span class="home-feat">Accuracy &amp; rating estimate</span>
-          <span class="home-feat">Free forever</span>
+          <span class="home-feat" data-i18n="browserOnly">Todo en tu navegador</span>
+          <span class="home-feat" data-i18n="moveCoaching">Explicación jugada a jugada</span>
+          <span class="home-feat" data-i18n="brilliantBlunder">Jugadas brillantes y graves errores</span>
+          <span class="home-feat" data-i18n="accuracyRating">Precisión y nivel estimado</span>
+          <span class="home-feat" data-i18n="freeForever">Gratis para siempre</span>
         </div>
       </section>
 
       <section id="screen-input" class="screen hidden">
-        <h1>Game Review</h1>
+        <h1 data-i18n="gameReviewTitle">Análisis de partida</h1>
         <div class="input-tabs" role="tablist">
-          <button id="tab-btn-pgn" class="input-tab active" role="tab" aria-selected="true">Paste PGN</button>
+          <button id="tab-btn-pgn" class="input-tab active" role="tab" aria-selected="true" data-i18n="pastePgnTab">Pegar PGN</button>
           <button id="tab-btn-cc" class="input-tab" role="tab" aria-selected="false">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a4 4 0 0 1 4 4c0 1.6-.95 3-2.3 3.6l.8 2.4h-5l.8-2.4A4 4 0 0 1 8 6a4 4 0 0 1 4-4zM8.5 13h7l1.3 5H7.2l1.3-5zM5.5 19.5h13a1 1 0 0 1 1 1V22h-15v-1.5a1 1 0 0 1 1-1z"/></svg>
-            From Chess.com
+            <span data-i18n="fromChesscom">Desde Chess.com</span>
           </button>
-          <label class="tier-label">Engine time
+          <label class="tier-label"><span data-i18n="engineTime">Tiempo de análisis</span>
             <select id="tier">
-              <option value="fast">Fast (75k nodes/move)</option>
-              <option value="standard" selected>Standard (200k nodes/move)</option>
-              <option value="deep">Deep (500k nodes/move)</option>
+              <option value="fast" data-i18n="fast">Rápido (75 mil nodos por jugada)</option>
+              <option value="standard" selected data-i18n="standard">Estándar (200 mil nodos por jugada)</option>
+              <option value="deep" data-i18n="deep">Profundo (500 mil nodos por jugada)</option>
             </select>
           </label>
         </div>
         <div id="tab-pgn" role="tabpanel">
-          <p class="hint">Paste a PGN (chess.com / lichess export) and let Stockfish 18 review every move — entirely in your browser.</p>
-          <textarea id="pgn-input" spellcheck="false" placeholder='[Event "..."]&#10;&#10;1. e4 e5 2. Nf3 ...'></textarea>
+          <p class="hint" data-i18n="pgnHint">Pega un PGN y Stockfish 18 analizará cada jugada.</p>
+          <textarea id="pgn-input" spellcheck="false" data-i18n-attr="placeholder:pgnPlaceholder" placeholder='[Event "..."]&#10;&#10;1. e4 e5 2. Nf3 ...'></textarea>
           <div class="row">
             <button id="analyze-btn" class="primary">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.4-4.4"/></svg>
-              Analyze game
+              <span data-i18n="analyzeGame">Analizar partida</span>
             </button>
           </div>
           <p id="input-error" class="error hidden"></p>
@@ -124,9 +125,9 @@
         <p id="progress-sub" class="progress-sub hidden"></p>
         <div id="progress-pct" class="progress-pct">0%</div>
         <div class="progress-track"><div id="progress-fill"></div></div>
-        <p id="progress-text">Starting engines…</p>
+        <p id="progress-text" data-i18n="startingEngines">Iniciando motores…</p>
         <p id="progress-quip" class="progress-quip"></p>
-        <button id="progress-cancel" class="progress-cancel">Cancel</button>
+        <button id="progress-cancel" class="progress-cancel" data-i18n="cancel">Cancelar</button>
       </section>
 
       <section id="screen-review" class="screen hidden">
@@ -146,25 +147,25 @@
             <div id="graph"></div>
             <div id="deep-review"></div>
             <div class="controls">
-              <button id="btn-start" title="Start of game (Home)" aria-label="Start of game">
+              <button id="btn-start" data-i18n-attr="title:startGame;aria-label:startGame" title="Inicio de la partida (Home)" aria-label="Inicio de la partida">
                 <svg viewBox="0 0 24 24"><path d="M7 6v12"/><path d="M18 7l-6 5 6 5"/></svg>
               </button>
-              <button id="btn-prev" title="Previous move (←)" aria-label="Previous move">
+              <button id="btn-prev" data-i18n-attr="title:previousMove;aria-label:previousMove" title="Jugada anterior" aria-label="Jugada anterior">
                 <svg viewBox="0 0 24 24"><path d="M14.5 6.5 9 12l5.5 5.5"/></svg>
               </button>
-              <button id="btn-next" class="nav-primary" title="Next move (→)" aria-label="Next move">
+              <button id="btn-next" class="nav-primary" data-i18n-attr="title:nextMove;aria-label:nextMove" title="Jugada siguiente" aria-label="Jugada siguiente">
                 <svg viewBox="0 0 24 24"><path d="M9.5 5.5 16 12l-6.5 6.5"/></svg>
               </button>
-              <button id="btn-end" title="End of game (End)" aria-label="End of game">
+              <button id="btn-end" data-i18n-attr="title:endGame;aria-label:endGame" title="Final de la partida" aria-label="Final de la partida">
                 <svg viewBox="0 0 24 24"><path d="M6 7l6 5-6 5"/><path d="M17 6v12"/></svg>
               </button>
               <span class="controls-gap"></span>
-              <button id="btn-flip" title="Flip board (f)" aria-label="Flip board">
+              <button id="btn-flip" data-i18n-attr="title:flipBoard;aria-label:flipBoard" title="Girar el tablero" aria-label="Girar el tablero">
                 <svg viewBox="0 0 24 24"><path d="M8 7v10M8 17l-3-3M8 17l3-3"/><path d="M16 17V7M16 7l-3 3M16 7l3 3"/></svg>
               </button>
-              <button id="btn-new" title="Review another game">
+              <button id="btn-new" data-i18n-attr="title:anotherGame" title="Analizar otra partida">
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-                New
+                <span data-i18n="new">Nueva</span>
               </button>
             </div>
           </aside>
@@ -172,7 +173,7 @@
       </section>
 
       <footer class="footer">
-        <span>Runs 100% in your browser · Stockfish 18 Lite (GPL) · openings CC0 lichess · pieces © Chess.com (Neo)</span>
+        <span data-i18n="footer">Todo se ejecuta en tu navegador · Stockfish 18 Lite (GPL) · aperturas CC0 de lichess · piezas © Chess.com (Neo)</span>
       </footer>
     </div>
     <script type="module" src="/frontend/src/main.ts"></script>

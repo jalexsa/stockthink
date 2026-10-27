@@ -18,6 +18,7 @@ import { makeSquare } from 'chessops/util';
 import type { GameReport, MoveReport } from '../analysis/report';
 import { composeComment } from '../compose/compose';
 import type { Fact } from '../concepts/facts';
+import { getLocale } from '@common/i18n';
 
 export interface MoveFactsheet {
   ply: number;
@@ -111,6 +112,9 @@ const isKeyMove = (m: MoveFactsheet): boolean =>
   (m.facts.length > 0 || !['best', 'excellent', 'good'].includes(m.classification));
 
 export function buildPrompt(sheet: GameFactsheet): string {
+  const languageRule = getLocale() === 'es'
+    ? 'Write every commentary in natural Latin American Spanish, using precise chess terminology. Preserve SAN, square names, and move notation exactly as given.'
+    : 'Write every commentary in English. Preserve SAN, square names, and move notation exactly as given.';
   const key = sheet.moves.filter(isKeyMove);
   const movesBlock = key
     .map(m => {
@@ -137,6 +141,7 @@ export function buildPrompt(sheet: GameFactsheet): string {
 For each move below, write a short coaching explanation of WHY the move is good or bad, as if you discovered the ideas through your own analysis of the position.
 
 Hard rules:
+- ${languageRule}
 - The verdict shown for each move is ground truth. Never contradict it, never soften it.
 - Use ONLY pieces, squares and moves that appear in the given position data and verified facts. Never invent a piece, square or tactic.
 - Never mention engines, evaluations, scores, percentages, centipawns, or that any information was provided to you.

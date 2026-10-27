@@ -217,6 +217,8 @@ export function archiveLabel(archiveUrl: string): string {
 /** "May 2" for this year's games, "May 2, 2025" for older ones. */
 export function dateLabel(endTimeSeconds: number, now: Date = new Date()): string {
   const d = new Date(endTimeSeconds * 1000);
-  const day = `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
-  return d.getFullYear() === now.getFullYear() ? day : `${day}, ${d.getFullYear()}`;
+  // Use UTC consistently: the archive timestamps are absolute, and local
+  // midnight can otherwise shift a January 1 reference into the prior year.
+  const day = `${MONTHS[d.getUTCMonth()].slice(0, 3)} ${d.getUTCDate()}`;
+  return d.getUTCFullYear() === now.getUTCFullYear() ? day : `${day}, ${d.getUTCFullYear()}`;
 }

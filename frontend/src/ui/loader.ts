@@ -1,3 +1,5 @@
+import { t } from '@common/i18n';
+
 /**
  * Progress-screen entertainment: a knight rides the 8-square ring of a 3×3
  * board — the classic closed knight's tour, every hop a legal move — while
@@ -11,16 +13,7 @@ const RING: Array<[number, number]> = [
   [0, 0], [2, 1], [0, 2], [1, 0], [2, 2], [0, 1], [2, 0], [1, 2],
 ];
 
-const QUIPS = [
-  'Stockfish 18 is crunching every position…',
-  'Checking captures, checks and threats first — like a good coach.',
-  'Hunting for brilliancies and missed wins…',
-  'Grading each move, from book to blunder…',
-  'No servers involved — your computer is doing all the work.',
-  'Measuring how the win chances swing, move by move…',
-  'Looking for the moves you’ll wish you’d seen…',
-  'Good moves get a nod. Bad moves get an explanation.',
-];
+const QUIP_COUNT = 8;
 
 const STEP_MS = 640;
 /** Rotate the quip every N knight hops (~2.5 s). */
@@ -41,7 +34,7 @@ export function startLoader(boardEl: HTMLElement, quipEl?: HTMLElement): void {
   const knight = boardEl.querySelector<HTMLElement>('.loader-knight')!;
   let i = 0;
   let hops = 0;
-  let quip = Math.floor(Math.random() * QUIPS.length);
+  let quip = Math.floor(Math.random() * QUIP_COUNT);
 
   const place = (animate: boolean): void => {
     const [col, row] = RING[i];
@@ -60,8 +53,8 @@ export function startLoader(boardEl: HTMLElement, quipEl?: HTMLElement): void {
     if (!quipEl) return;
     quipEl.classList.add('quip-out');
     setTimeout(() => {
-      quipEl.textContent = QUIPS[quip];
-      quip = (quip + 1) % QUIPS.length;
+      quipEl.textContent = t(`quip${quip + 1}` as Parameters<typeof t>[0]);
+      quip = (quip + 1) % QUIP_COUNT;
       quipEl.classList.remove('quip-out');
     }, 180);
   };

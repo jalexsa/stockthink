@@ -21,7 +21,7 @@ import { analysisQueue, type QueueJob } from '@backend/chesscom/queue';
 import { getReport } from '@backend/chesscom/store';
 import type { VariationChip } from '@backend/compose/compose';
 import { disposeLive, liveMoveReport, seedLiveAnalysis } from '@backend/live';
-import { initChesscomTab, refreshCached } from './ui/chesscom';
+import { initChesscomTab, refreshCached, refreshChesscomLanguage } from './ui/chesscom';
 import { startLoader, stopLoader } from './ui/loader';
 import { badgeSvg } from './ui/badges';
 import { formatEval, renderCoach, renderCoachThinking } from './ui/coach';
@@ -31,6 +31,9 @@ import { attachPreviews } from './ui/santag';
 import { renderGraph } from './ui/graph';
 import { renderMoveList } from './ui/movelist';
 import { renderSummary } from './ui/summary';
+import { applyStaticTranslations, getLocale, initLocale, setLocale, t } from '@common/i18n';
+
+initLocale();
 
 const $ = <T extends HTMLElement = HTMLElement>(sel: string): T =>
   document.querySelector(sel) as T;
@@ -99,12 +102,12 @@ function renderHome(): void {
   const name = (h: string | undefined): string | null => (h && h !== '?' ? h : null);
   const w = name(report.headers.White);
   const b = name(report.headers.Black);
-  const who = w || b ? ` — <b>${esc(w ?? 'White')}</b> vs <b>${esc(b ?? 'Black')}</b>` : '';
+  const who = w || b ? ` — <b>${esc(w ?? t('unknownWhite'))}</b> vs <b>${esc(b ?? t('unknownBlack'))}</b>` : '';
   el.innerHTML = `
     <button class="home-continue" id="home-resume">
       <span class="home-continue-dot"></span>
-      <span class="home-continue-text">Continue your review${who}</span>
-      <span class="home-go">Resume →</span>
+      <span class="home-continue-text">${t('continueReview')}${who}</span>
+      <span class="home-go">${t('resume')}</span>
     </button>`;
   $('#home-resume').addEventListener('click', () => show('review'));
 }
@@ -114,6 +117,17 @@ const currentTier = (): Tier => ($('#tier') as unknown as HTMLSelectElement).val
 
 const isAbortError = (e: unknown): boolean =>
   e instanceof DOMException && e.name === 'AbortError';
+
+function displayAnalysisError(e: unknown): string {
+  const message = e instanceof Error ? e.message : String(e);
+  if (message === 'No game found in PGN') return t('noGameInPgn');
+  if (message === 'PGN contains no moves') return t('pgnNoMoves');
+  const badStart = message.match(/^Bad starting position in PGN: (.*)$/);
+  if (badStart) return t('badPgnStart', { detail: badStart[1] });
+  const illegal = message.match(/^Illegal or unreadable move (\d+): "(.*)"$/);
+  if (illegal) return t('illegalPgnMove', { ply: illegal[1], san: illegal[2] });
+  return message;
+}
 
 function openReport(r: AnnotatedReport): void {
   report = r;
@@ -138,7 +152,7 @@ async function runForeground(job: QueueJob, sub: string | null): Promise<Annotat
   const subEl = $('#progress-sub');
   subEl.textContent = sub ?? '';
   subEl.classList.toggle('hidden', !sub);
-  $('#progress-text').textContent = 'Starting engines…';
+  $('#progress-text').textContent = t('startingEngines');
   $('#progress-fill').style.width = '0%';
   $('#progress-pct').textContent = '0%';
   foregroundJobId = job.id;
@@ -147,7 +161,7 @@ async function runForeground(job: QueueJob, sub: string | null): Promise<Annotat
       const pct = `${Math.round((done / total) * 100)}%`;
       $('#progress-fill').style.width = pct;
       $('#progress-pct').textContent = pct;
-      $('#progress-text').textContent = `Evaluating position ${done} / ${total}`;
+      $('#progress-text').textContent = t('evaluatingPosition', { done, total });
     });
     return seq === fgSeq ? r : null;
   } catch (e) {
@@ -163,7 +177,7 @@ async function startAnalysis(): Promise<void> {
   const errEl = $('#input-error');
   errEl.classList.add('hidden');
   if (!pgn) {
-    errEl.textContent = 'Paste a PGN first.';
+    errEl.textContent = t('pastePgnError');
     errEl.classList.remove('hidden');
     return;
   }
@@ -175,7 +189,7 @@ async function startAnalysis(): Promise<void> {
     show('input');
     setTab('pgn');
     if (isAbortError(e)) return;
-    errEl.textContent = e instanceof Error ? e.message : String(e);
+    errEl.textContent = displayAnalysisError(e);
     errEl.classList.remove('hidden');
   }
 }
@@ -570,8 +584,8 @@ function renderPlayerBars(): void {
        <span class="player-name">${esc(name)}</span>
        <span class="elo">${elo ? `(${esc(elo)})` : ''}</span>
      </div>`;
-  const white = strip(h.White ?? 'White', h.WhiteElo);
-  const black = strip(h.Black ?? 'Black', h.BlackElo);
+  const white = strip(h.White ?? t('unknownWhite'), h.WhiteElo);
+  const black = strip(h.Black ?? t('unknownBlack'), h.BlackElo);
   const top = $('#player-top');
   const bottom = $('#player-bottom');
   top.innerHTML = orientation === 'white' ? black : white;
@@ -640,7 +654,7 @@ analysisQueue.subscribe(snap => {
     ? ` · ${Math.round((snap.active.done / snap.active.total) * 100)}%`
     : '';
   const n = Math.min(snap.doneCount + 1, snap.totalCount);
-  pill.innerHTML = `<span class="cc-spin"></span>Analyzing ${n} of ${snap.totalCount}${pct}`;
+  pill.innerHTML = `<span class="cc-spin"></span>${t('analyzing', { current: n, total: snap.totalCount })}${pct}`;
   pill.classList.remove('hidden');
 });
 
@@ -661,6 +675,24 @@ $('#btn-new').addEventListener('click', () => {
   disposeLive();
   $('#nav-review').classList.add('hidden');
   show('input');
+});
+
+const languageSelect = $('#language-select') as HTMLSelectElement;
+languageSelect.value = getLocale();
+applyStaticTranslations();
+document.title = t('documentTitle');
+document.querySelector('meta[name="description"]')?.setAttribute('content', t('heroDescription'));
+languageSelect.addEventListener('change', () => {
+  setLocale(languageSelect.value === 'en' ? 'en' : 'es');
+  document.documentElement.lang = getLocale();
+  document.title = t('documentTitle');
+  document.querySelector('meta[name="description"]')?.setAttribute('content', t('heroDescription'));
+  applyStaticTranslations();
+  if (report && !screens.review().classList.contains('hidden')) {
+    renderDeepReview($('#deep-review'), report, imported => { aiComments = imported; render(); });
+    render();
+  } else if (!screens.home().classList.contains('hidden')) renderHome();
+  refreshChesscomLanguage();
 });
 
 show('home'); // boot: land on the home screen (starts its knight)

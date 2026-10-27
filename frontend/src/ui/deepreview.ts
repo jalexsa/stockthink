@@ -16,6 +16,7 @@ import {
   storeKey,
   webgpuAvailable,
 } from '@backend/llm/providers';
+import { t } from '@common/i18n';
 
 export function renderDeepReview(
   el: HTMLElement,
@@ -27,24 +28,24 @@ export function renderDeepReview(
 
   el.innerHTML = `
     <details class="ai-panel">
-      <summary>Deep review (AI commentary)</summary>
-      <p class="ai-hint">All three options use the same machine-verified pipeline: AI wording is checked against the analysis facts; anything unverifiable keeps the standard explanation.</p>
+      <summary>${t('deepReview')}</summary>
+      <p class="ai-hint">${t('deepReviewHint')}</p>
 
       <div class="ai-row">
-        <button id="dr-api" class="primary">Generate with your API key</button>
-        <input id="dr-key" type="password" spellcheck="false" placeholder="Anthropic API key (stays in this browser)" />
+        <button id="dr-api" class="primary">${t('generateApi')}</button>
+        <input id="dr-key" type="password" spellcheck="false" placeholder="${t('apiKeyPlaceholder')}" />
       </div>
 
       <div class="ai-row">
-        <button id="dr-local">Generate locally (one-time ~700&nbsp;MB download)</button>
+        <button id="dr-local">${t('generateLocal')}</button>
       </div>
 
       <div class="ai-row">
-        <button id="dr-copy">Copy prompt for a Claude chat</button>
+        <button id="dr-copy">${t('copyPrompt')}</button>
         <span id="dr-status" class="ai-status"></span>
       </div>
-      <textarea id="dr-paste" rows="4" spellcheck="false" placeholder='Paste the JSON reply here…'></textarea>
-      <div class="ai-row"><button id="dr-import">Import commentary</button></div>
+      <textarea id="dr-paste" rows="4" spellcheck="false" placeholder='${t('pasteJson')}'></textarea>
+      <div class="ai-row"><button id="dr-import">${t('importCommentary')}</button></div>
     </details>`;
 
   const status = el.querySelector('#dr-status') as HTMLElement;
@@ -58,12 +59,12 @@ export function renderDeepReview(
     try {
       const result = importCommentary(raw, getSheet());
       say(
-        `${result.accepted.size} comments imported` +
-          (result.rejected.size ? `, ${result.rejected.size} rejected by the verifier.` : '.'),
+        t('commentsImported', { count: result.accepted.size }) +
+          (result.rejected.size ? t('commentsRejected', { count: result.rejected.size }) : '.'),
       );
       if (result.accepted.size) onImported(result.accepted);
     } catch {
-      say('The reply could not be read — keeping the standard commentary.');
+      say(t('replyUnreadable'));
     }
   };
 
@@ -74,7 +75,7 @@ export function renderDeepReview(
   apiBtn.addEventListener('click', () => {
     const key = keyInput.value.trim();
     if (!key) {
-      say('Paste your Anthropic API key first.');
+      say(t('pasteApiKey'));
       return;
     }
     storeKey(key);
@@ -98,14 +99,14 @@ export function renderDeepReview(
   // option 3: manual copy/paste exchange (always available, always free)
   el.querySelector('#dr-copy')!.addEventListener('click', () => {
     void navigator.clipboard.writeText(buildPrompt(getSheet())).then(
-      () => say('Prompt copied — paste it into Claude.'),
-      () => say('Could not access the clipboard.'),
+      () => say(t('promptCopied')),
+      () => say(t('clipboardError')),
     );
   });
   el.querySelector('#dr-import')!.addEventListener('click', () => {
     const pasted = (el.querySelector('#dr-paste') as HTMLTextAreaElement).value.trim();
     if (!pasted) {
-      say('Paste the JSON reply first.');
+      say(t('pasteReply'));
       return;
     }
     acceptReply(pasted);
