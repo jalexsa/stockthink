@@ -122,6 +122,14 @@ button.wordmark:hover .brand-mark { transform: rotate(-8deg) scale(1.06); }
 .nav-label-short { display: none; }
 .language-picker { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--text-secondary); font-size: 11px; font-weight: 700; }
 .language-picker select { color: var(--text-primary); background: var(--bg-surface-2); border: 1px solid var(--border-default); border-radius: 8px; padding: 5px 7px; font: inherit; }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.topbar-actions .language-picker { margin-left: 0; }
+.sound-toggle { width: 32px; height: 32px; padding: 6px; display: grid; place-items: center; color: var(--text-primary); background: var(--bg-surface-2); border: 1px solid var(--border-default); border-radius: 8px; cursor: pointer; }
+.sound-toggle svg { width: 19px; height: 19px; }
+.sound-toggle:hover { border-color: var(--green-500); }
+.sound-slash,.sound-toggle[aria-pressed="false"] .sound-waves { display: none; }
+.sound-toggle[aria-pressed="false"] .sound-slash { display: block; }
+.sound-toggle[aria-pressed="false"] { color: var(--text-secondary); }
 .nav-link {
   display: inline-flex;
   align-items: center;
@@ -395,15 +403,16 @@ button.primary:active { transform: translateY(3px); box-shadow: 0 1px 0 0 var(--
 }
 @media (max-width: 560px) {
   .wordmark-text { display: none; } /* logo tile alone — keeps 3 nav links from overflowing */
-  .topbar { padding: 0 14px; gap: 8px; }
+  .topbar { padding: 0 10px; gap: 4px; }
   .language-picker { gap: 0; }
   .language-picker > span { display: none; }
   .language-picker select { max-width: 82px; }
   .nav-label-full { display: none; }
   .nav-label-short { display: inline; }
   .topnav { margin-left: 0; }
-  .topnav .nav-link { padding: 7px 8px; font-size: 12px; white-space: nowrap; }
+  .topnav .nav-link { padding: 7px 5px; gap: 4px; font-size: 11.5px; white-space: nowrap; }
 }
+@media (max-width: 390px) { .topnav .nav-link svg { display: none; } }
 
 /* ---------------- progress (centered, knight loader) ---------------- */
 #screen-progress {

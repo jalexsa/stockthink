@@ -59,6 +59,15 @@ npx playwright install chromium           # once, for browser verification
 npm run test:browser                      # desktop + mobile, real PGN / Stockfish
 ```
 
+## Piece sounds
+
+Moves have short, original wood-tap sounds, with distinct captures and a double
+tap for castling. The speaker button in the analysis app toggles sound and saves
+the preference locally when possible. Sounds begin only after a move action;
+language changes, board flips, hover previews and background analysis are silent.
+Audio is generated with Web Audio (`frontend/src/ui/sound.ts`), without external
+audio files or dependencies. Unsupported/blocked audio does not interrupt play.
+
 ## Languages
 
 The landing page and analysis app default to Spanish and share a visible language

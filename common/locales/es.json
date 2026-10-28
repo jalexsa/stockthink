@@ -1,5 +1,8 @@
 {
   "language": "Idioma",
+  "pieceSounds": "Sonido de las piezas",
+  "muteSound": "Silenciar sonido",
+  "enableSound": "Activar sonido",
   "home": "Inicio",
   "gameReview": "Análisis de partida",
   "currentGame": "Partida actual",

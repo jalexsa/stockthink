@@ -26,7 +26,9 @@ outside the repository. Product names remain descriptive text; no endorsement
 by the original author, Chess.com or Stockfish is implied.
 
 Three.js is MIT; chessops/chessground retain their GPL notices; WebLLM uses
-Apache-2.0. Preserve the applicable package notices with a distribution.
+Apache-2.0. Piece-move audio is original procedural Web Audio synthesis under
+GPL-3.0-or-later (`frontend/src/ui/sound.ts`), with no third-party recordings.
+Preserve the applicable package notices with a distribution.
 Google Fonts are remote requests, not bundled font binaries
 ([Inter](https://raw.githubusercontent.com/google/fonts/main/ofl/inter/OFL.txt)
 and [Bricolage Grotesque](https://raw.githubusercontent.com/google/fonts/main/ofl/bricolagegrotesque/OFL.txt)

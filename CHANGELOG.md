@@ -12,6 +12,8 @@ into the new version section as you go.
 ## [Unreleased]
 
 ### Added
+- Original procedural piece-move sounds, capture/castling variants and a bilingual
+  speaker toggle with a locally saved mute preference. No external audio assets.
 - Completed landing-page Spanish/English captions, shared persistent language
   controls, accessible labels and reduced-motion presentation. Added Chromium
   desktop/mobile PGN coverage and translation resource parity tests.

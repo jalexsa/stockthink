@@ -31,6 +31,7 @@ import { attachPreviews } from './ui/santag';
 import { renderGraph } from './ui/graph';
 import { renderMoveList } from './ui/movelist';
 import { renderSummary } from './ui/summary';
+import { pieceSoundsEnabled, playMoveSound, setPieceSoundsEnabled } from './ui/sound';
 import { applyStaticTranslations, getLocale, initLocale, setLocale, t, type Locale } from '@common/i18n';
 
 initLocale();
@@ -292,6 +293,7 @@ function onUserMove(orig: Key, dest: Key): void {
   if (!pos.isLegal(move)) return render();
 
   const san = makeSan(pos, move);
+  playMoveSound(san);
   const token = ++liveToken;
   exploreThinking = true;
   render();
@@ -387,13 +389,19 @@ function renderSpotlight(): void {
   if (chip.eval) setEvalBar(chip.eval, winPercent(chip.eval));
   renderSpotlightCard($('#coach'), title, kind, steps, i, {
     go: n => {
-      if (!spotlight) return;
-      spotlight.i = Math.max(0, Math.min(steps.length - 1, n));
-      renderSpotlight();
+      seekSpotlight(n);
     },
     exit: exitSpotlight,
   });
   attachPreviews($('#coach'), startPreview, endPreview);
+}
+
+function seekSpotlight(n: number): void {
+  if (!spotlight) return;
+  const before = spotlightFen(), previous = spotlight.i;
+  spotlight.i = Math.max(0, Math.min(spotlight.steps.length - 1, n));
+  renderSpotlight();
+  if (before !== spotlightFen()) playMoveSound(spotlight.chip.sanPv[Math.max(previous, spotlight.i) - 1] ?? '');
 }
 
 /** Board position the Spotlight is currently showing (step or try line). */
@@ -417,6 +425,7 @@ function onSpotlightMove(orig: Key, dest: Key): void {
   if (!pos.isLegal(move)) return renderSpotView();
 
   const san = makeSan(pos, move);
+  playMoveSound(san);
   const token = ++liveToken;
   spotlight.thinking = true;
   renderTryCard($('#coach'), null, san, { undo: () => {}, back: backToLine });
@@ -444,18 +453,21 @@ function renderSpotView(): void {
 
 function backToLine(): void {
   if (!spotlight) return;
+  const last = spotlight.tryLine[spotlight.tryLine.length - 1];
   liveToken++;
   spotlight.tryLine = [];
   spotlight.thinking = false;
   renderSpotlight();
+  if (last) playMoveSound(last.san);
 }
 
 function undoTryMove(): void {
   if (!spotlight) return;
   liveToken++;
   spotlight.thinking = false;
-  spotlight.tryLine.pop();
+  const undone = spotlight.tryLine.pop();
   renderSpotView();
+  if (undone) playMoveSound(undone.san);
 }
 
 /** Try mode: user's own move on the board, rated — visually distinct card. */
@@ -580,8 +592,10 @@ function render(): void {
   $('#coach')
     .querySelector('#live-back')
     ?.addEventListener('click', () => {
+      const last = exploreLine[exploreLine.length - 1];
       exitExplore();
       render();
+      if (last) playMoveSound(last.san);
     });
   attachPreviews($('#coach'), startPreview, endPreview);
   renderGraph($('#graph'), r.moves, ply, seek);
@@ -613,9 +627,11 @@ function renderPlayerBars(): void {
 
 function seek(p: number): void {
   if (!report) return;
+  const before = spotlight ? spotlightFen() : shownFen(), previous = ply;
   exitExplore();
   ply = Math.max(0, Math.min(report.moves.length, p));
   render();
+  if (before !== shownFen()) playMoveSound(report.moves[Math.max(previous, ply) - 1]?.san ?? '');
 }
 
 /* ------------------------------------------------------------ wiring --- */
@@ -693,6 +709,16 @@ $('#btn-new').addEventListener('click', () => {
 });
 
 const languageSelect = $('#language-select') as HTMLSelectElement;
+const soundToggle = $('#sound-toggle');
+function refreshSoundToggle(): void {
+  soundToggle.setAttribute('aria-pressed', String(pieceSoundsEnabled()));
+  soundToggle.title = t(pieceSoundsEnabled() ? 'muteSound' : 'enableSound');
+}
+refreshSoundToggle();
+soundToggle.addEventListener('click', () => {
+  setPieceSoundsEnabled(!pieceSoundsEnabled());
+  refreshSoundToggle();
+});
 languageSelect.value = getLocale();
 applyStaticTranslations();
 document.title = t('documentTitle');
@@ -703,6 +729,7 @@ languageSelect.addEventListener('change', () => {
   document.title = t('documentTitle');
   document.querySelector('meta[name="description"]')?.setAttribute('content', t('heroDescription'));
   applyStaticTranslations();
+  refreshSoundToggle();
   if (report && !screens.review().classList.contains('hidden')) {
     renderDeepReviewPanel(report,true);
     if (spotlight) {
@@ -732,12 +759,10 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowRight') {
       if (spotlight.i >= spotlight.steps.length - 1) exitSpotlight();
       else {
-        spotlight.i++;
-        renderSpotlight();
+        seekSpotlight(spotlight.i + 1);
       }
     } else if (e.key === 'ArrowLeft' && spotlight.i > 0) {
-      spotlight.i--;
-      renderSpotlight();
+      seekSpotlight(spotlight.i - 1);
     } else if (e.key === 'Escape') exitSpotlight();
     return;
   }
@@ -747,8 +772,9 @@ document.addEventListener('keydown', e => {
         // step back through the explored line before leaving it
         liveToken++;
         exploreThinking = false;
-        exploreLine.pop();
+        const undone = exploreLine.pop();
         render();
+        if (undone) playMoveSound(undone.san);
       } else seek(ply - 1);
       break;
     case 'ArrowRight':

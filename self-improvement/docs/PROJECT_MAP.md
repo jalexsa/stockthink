@@ -129,6 +129,11 @@ PGN text
 
 ## To change X, edit here
 
+Piece audio: `frontend/src/ui/sound.ts` synthesizes original wood taps and stores
+the mute preference; explicit move/navigation handlers in `frontend/src/main.ts`
+trigger it. `self-improvement/browser/sound.e2e.ts` observes real audio playback
+and verifies no sound on redraws, persistent mute and mobile control bounds.
+
 | X | Where |
 |---|---|
 | When a comment fires / when we stay quiet | `backend/src/compose/compose.ts` (kind sets, NEUTRAL pools) + the detector's confirm-gate in `backend/src/concepts/annotate.ts` |

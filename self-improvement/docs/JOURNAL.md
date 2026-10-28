@@ -6,6 +6,14 @@ for /work sessions). Past ~300 lines, /reflect compresses the oldest half into
 LESSONS.md. Entries below 2026-06-12p were migrated verbatim from
 self-improvement/improve/TRACKER.md's daily log (2026-06-12) — history is not rewritten.
 
+- **2026-10-27b** · Piece-move audio: original Web Audio wood taps, capture/castling
+  variants, bilingual speaker toggle and persistent mute. Only explicit legal moves
+  and review/variation navigation trigger audio; redraws/previews/engine work stay silent.
+  No third-party recordings, dependencies or chess-analysis changes. Browser tests
+  observe real audio nodes, legal user captures, keyboard navigation and saved mute;
+  desktop/mobile controls checked down to 360px. Unit suite: 267 passed, 1 guard skipped;
+  build passed. Full browser suite: 6 passed (35.1s), screenshots inspected.
+
 - **2026-10-27** · Bilingual release preparation: backed up all 249 initial source files
   with verified hashes before edits; existing feature/spanish-localization retained.
   Git write failure was sandbox access, not a corrupt index; elevated probe/refresh worked.

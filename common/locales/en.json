@@ -1,5 +1,8 @@
 {
   "language": "Language",
+  "pieceSounds": "Piece sounds",
+  "muteSound": "Mute sound",
+  "enableSound": "Enable sound",
   "home": "Home",
   "gameReview": "Game Review",
   "currentGame": "Current Game",

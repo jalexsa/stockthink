@@ -45,7 +45,12 @@
           </button>
         </nav>
         <span id="queue-pill" class="queue-pill hidden"></span>
-        <label class="language-picker"><span data-i18n="language">Idioma</span><select id="language-select" data-i18n-attr="aria-label:language" aria-label="Idioma"><option value="es">Español</option><option value="en">English</option></select></label>
+        <div class="topbar-actions">
+          <label class="language-picker"><span data-i18n="language">Idioma</span><select id="language-select" data-i18n-attr="aria-label:language" aria-label="Idioma"><option value="es">Español</option><option value="en">English</option></select></label>
+          <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="true" aria-label="Sonido de las piezas" data-i18n-attr="aria-label:pieceSounds" title="Silenciar sonido">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4 6 8H3v8h3l5 4z"/><path class="sound-waves" d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="sound-slash" d="m15 9 6 6m0-6-6 6"/></svg>
+          </button>
+        </div>
       </header>
 
       <section id="screen-home" class="screen">
